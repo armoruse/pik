@@ -129,6 +129,9 @@ public final class MainActivity extends Activity {
         content.addView(service, matchParams());
         addSpace(content, 14);
 
+        content.addView(versionCard(), matchParams());
+        addSpace(content, 14);
+
         LinearLayout links = card();
         links.addView(sectionTitle(R.string.main_links_title));
         addSpace(links, 12);
@@ -162,6 +165,101 @@ public final class MainActivity extends Activity {
         warning.addView(title);
         warning.addView(text(getString(R.string.main_warning_body), 14, WARNING_TEXT));
         return warning;
+    }
+
+    private static final String GITHUB_RELEASES_URL = "https://github.com/armoruse/pik/releases";
+    private static final String GITHUB_API_LATEST = "https://api.github.com/repos/armoruse/pik/releases/latest";
+
+    private View versionCard() {
+        LinearLayout card = card();
+        card.addView(sectionTitle(R.string.main_update_title));
+        addSpace(card, 6);
+        card.addView(sectionDescription(getString(R.string.main_current_version, BuildConfig.VERSION_NAME)));
+        addSpace(card, 12);
+
+        Button checkUpdate = primaryButton(R.string.main_check_update);
+        checkUpdate.setOnClickListener(view -> checkForUpdates());
+        card.addView(checkUpdate, matchParams());
+        addSpace(card, 8);
+
+        Button openRelease = secondaryButton(R.string.main_open_github_release);
+        openRelease.setOnClickListener(view -> openExternalLink(GITHUB_RELEASES_URL));
+        card.addView(openRelease, matchParams());
+        return card;
+    }
+
+    private void checkForUpdates() {
+        Toast.makeText(this, "正在連線檢查最新版本...", Toast.LENGTH_SHORT).show();
+        new Thread(() -> {
+            try {
+                java.net.URL url = new java.net.URL(GITHUB_API_LATEST);
+                java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
+                conn.setRequestProperty("User-Agent", "rog-updater");
+                conn.setConnectTimeout(6000);
+                conn.setReadTimeout(6000);
+                if (conn.getResponseCode() == 200) {
+                    java.io.BufferedReader reader = new java.io.BufferedReader(
+                            new java.io.InputStreamReader(conn.getInputStream()));
+                    StringBuilder sb = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line);
+                    }
+                    reader.close();
+                    org.json.JSONObject json = new org.json.JSONObject(sb.toString());
+                    String tagName = json.optString("tag_name", "");
+                    String htmlUrl = json.optString("html_url", GITHUB_RELEASES_URL);
+
+                    String apkUrl = htmlUrl;
+                    org.json.JSONArray assets = json.optJSONArray("assets");
+                    if (assets != null) {
+                        for (int i = 0; i < assets.length(); i++) {
+                            org.json.JSONObject asset = assets.getJSONObject(i);
+                            String name = asset.optString("name", "");
+                            if (name.endsWith(".apk")) {
+                                apkUrl = asset.optString("browser_download_url", htmlUrl);
+                                break;
+                            }
+                        }
+                    }
+
+                    final String finalTag = tagName;
+                    final String finalDownloadUrl = apkUrl;
+                    final String currentVersion = BuildConfig.VERSION_NAME;
+
+                    runOnUiThread(() -> {
+                        if (isCurrentOrNewer(currentVersion, finalTag)) {
+                            Toast.makeText(MainActivity.this,
+                                    "目前已是最新版本 (" + currentVersion + ")！",
+                                    Toast.LENGTH_LONG).show();
+                        } else {
+                            new android.app.AlertDialog.Builder(MainActivity.this)
+                                    .setTitle("發現新版本！")
+                                    .setMessage("最新版本：" + finalTag + "\n目前版本：" + currentVersion + "\n\n是否前往下載更新？")
+                                    .setPositiveButton("前往下載", (dialog, which) -> openExternalLink(finalDownloadUrl))
+                                    .setNegativeButton("稍後再說", null)
+                                    .show();
+                        }
+                    });
+                } else {
+                    runOnUiThread(() -> openExternalLink(GITHUB_RELEASES_URL));
+                }
+            } catch (Exception e) {
+                runOnUiThread(() -> {
+                    Toast.makeText(MainActivity.this, "連線逾時，直接為您開啟 Release 頁面", Toast.LENGTH_SHORT).show();
+                    openExternalLink(GITHUB_RELEASES_URL);
+                });
+            }
+        }).start();
+    }
+
+    private static boolean isCurrentOrNewer(String current, String remoteTag) {
+        if (current == null || remoteTag == null) {
+            return true;
+        }
+        String c = current.trim().toLowerCase(java.util.Locale.ROOT).replace("v", "");
+        String r = remoteTag.trim().toLowerCase(java.util.Locale.ROOT).replace("v", "");
+        return c.equals(r);
     }
 
     /** 切換懸浮窗；服務未啟用時以提示取代無效操作。 */

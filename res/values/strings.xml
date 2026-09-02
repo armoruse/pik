@@ -31,6 +31,10 @@
     <string name="main_open_community">加入 LINE 社群</string>
     <string name="main_open_sponsor">前往贊助</string>
     <string name="main_link_unavailable">無法開啟連結，請確認裝置已安裝瀏覽器或對應 App</string>
+    <string name="main_update_title">版本與更新</string>
+    <string name="main_current_version">目前版本：%1$s</string>
+    <string name="main_check_update">檢查最新版本</string>
+    <string name="main_open_github_release">前往 GitHub 下載發布頁</string>
 
     <!-- 自動化狀態。 -->
     <string name="status_service_interrupted">服務被系統暫停</string>
