@@ -1,17 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 以綠色圓形與四瓣花圖案作為辨識度高的啟動圖示。 -->
+<!-- 可愛經典紅色皮克敏小頭圖示 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
+    <!-- 圓形背景 -->
     <path
-        android:fillColor="#2E7D32"
+        android:fillColor="#F1F8E9"
+        android:strokeColor="#C5E1A5"
+        android:strokeWidth="2"
         android:pathData="M54,6A48,48 0,1 0,54 102A48,48 0,1 0,54 6" />
+
+    <!-- 綠色莖 -->
     <path
-        android:fillColor="#FFF9C4"
-        android:pathData="M54,52C35,43 35,22 54,20C73,22 73,43 54,52M56,54C65,35 86,35 88,54C86,73 65,73 56,54M54,56C73,65 73,86 54,88C35,86 35,65 54,56M52,54C43,73 22,73 20,54C22,35 43,35 52,54" />
+        android:fillColor="#00000000"
+        android:strokeColor="#388E3C"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"
+        android:pathData="M54,48 L54,22" />
+
+    <!-- 頂部綠色葉子 -->
     <path
-        android:fillColor="#FFB300"
-        android:pathData="M54,45A9,9 0,1 0,54 63A9,9 0,1 0,54 45" />
+        android:fillColor="#4CAF50"
+        android:strokeColor="#2E7D32"
+        android:strokeWidth="1.5"
+        android:pathData="M54,24 C40,18 40,6 54,6 C68,6 68,18 54,24 Z" />
+
+    <!-- 紅色皮克敏圓圓大頭 -->
+    <path
+        android:fillColor="#E53935"
+        android:pathData="M54,44 C67.25,44 78,54.75 78,68 C78,81.25 67.25,92 54,92 C40.75,92 30,81.25 30,68 C30,54.75 40.75,44 54,44 Z" />
+
+    <!-- 尖尖小鼻子 -->
+    <path
+        android:fillColor="#C62828"
+        android:pathData="M50,68 L54,80 L58,68 Z" />
+
+    <!-- 腮紅 -->
+    <path
+        android:fillColor="#FF8A80"
+        android:pathData="M32,73 A3,3 0,1 0,38 73 A3,3 0,1 0,32 73 Z" />
+    <path
+        android:fillColor="#FF8A80"
+        android:pathData="M70,73 A3,3 0,1 0,76 73 A3,3 0,1 0,70 73 Z" />
+
+    <!-- 左眼白 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:strokeColor="#B71C1C"
+        android:strokeWidth="1"
+        android:pathData="M36,60 C36,54 39,51 43,51 C47,51 50,54 50,60 C50,66 47,69 43,69 C39,69 36,66 36,60 Z" />
+
+    <!-- 右眼白 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:strokeColor="#B71C1C"
+        android:strokeWidth="1"
+        android:pathData="M58,60 C58,54 61,51 65,51 C69,51 72,54 72,60 C72,66 69,69 65,69 C61,69 58,66 58,60 Z" />
+
+    <!-- 左黑眼珠 -->
+    <path
+        android:fillColor="#212121"
+        android:pathData="M40,60 A3.5,3.5 0,1 0,47 60 A3.5,3.5 0,1 0,40 60 Z" />
+
+    <!-- 右黑眼珠 -->
+    <path
+        android:fillColor="#212121"
+        android:pathData="M61,60 A3.5,3.5 0,1 0,68 60 A3.5,3.5 0,1 0,61 60 Z" />
+
+    <!-- 眼神高光 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M42,58 A1.5,1.5 0,1 0,45 58 A1.5,1.5 0,1 0,42 58 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M63,58 A1.5,1.5 0,1 0,66 58 A1.5,1.5 0,1 0,63 58 Z" />
 </vector>

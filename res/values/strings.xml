@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- 應用程式與無障礙服務的公開名稱。 -->
-    <string name="app_name">PikminX</string>
-    <string name="accessibility_label">PikminX</string>
+    <string name="app_name">rog1.0</string>
+    <string name="accessibility_label">rog1.0</string>
     <string name="accessibility_description">讀取 Pikmin Bloom 畫面，依使用者啟動的功能辨識並點擊花盆、明信片、探險或回程物品。</string>
 
     <!-- 主畫面內容。 -->
-    <string name="main_title">PikminX</string>
+    <string name="main_title">rog1.0</string>
     <string name="main_warning_title">使用前請先確認</string>
     <string name="main_warning_body">請只在你理解無障礙服務與自動點擊風險的裝置上使用。遊戲畫面與花盆位置仍由你自行控制。</string>
     <string name="main_service_title">服務與操作</string>
@@ -227,7 +227,7 @@
     <string name="overlay_planting_searching">搜尋花盆：%1$s</string>
 
     <!-- Concept v2 懸浮卡片與執行狀態。 -->
-    <string name="overlay_brand_title">PikminX</string>
+    <string name="overlay_brand_title">rog1.0</string>
     <string name="overlay_ready">已就緒</string>
     <string name="overlay_current_status">目前狀態</string>
     <string name="overlay_ready_planting">已就緒，等待開始</string>

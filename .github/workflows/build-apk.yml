@@ -32,36 +32,36 @@ jobs:
       - name: Prepare APK artifact
         run: |
           mkdir -p release_apk
-          find build/outputs/apk/ -name "*.apk" -exec cp {} release_apk/PikminX-3.0.9-ROG3.apk \;
+          find build/outputs/apk/ -name "*.apk" -exec cp {} release_apk/rog1.0.apk \;
           ls -lh release_apk/
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: PikminX-3.0.9-ROG3-APK
-          path: release_apk/PikminX-3.0.9-ROG3.apk
+          name: rog1.0-APK
+          path: release_apk/rog1.0.apk
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         if: github.ref == 'refs/heads/main'
         with:
-          tag_name: v3.0.9-skip2days
-          name: "PikminX v3.0.9 (大於 2 日自動跳過 + ROG Phone 3 座標修復版)"
+          tag_name: v1.0-rog
+          name: "rog1.0 (獨立並存安裝版)"
           body: |
-            ## 🚀 PikminX v3.0.9 (大於 2 日自動跳過 + ROG Phone 3 座標修復版)
+            ## 🚀 rog1.0 (獨立並存安裝版 - 專為 ROG Phone 3 定制)
             
-            ### 本次更新重點：
-            1. **【全新功能】自動派遣大於 2 天自動跳過換下一個**：
+            ### 🌟 本版本特色：
+            1. **可與原版 PikminX 同時安裝並存**：
+               - Package ID 獨立為 `com.pikminx.rog`，App 名稱顯示為 **rog1.0**。
+               - 不會覆蓋你手機上的原版 PikminX，兩者可同時保留隨時切換！
+            2. **更換全新 App 圖示**：
+               - 圖示換成可愛簡約的紅色皮克敏小頭造型，桌面上輕鬆辨識！
+            3. **自動派遣大於 2 天自動跳過換下一個**：
                - 在皮克敏選滿（例如 2/2、4/4）時，OCR 自動偵測頂部預估時間（如「距離回來還有 91 日 1 小時」）。
                - 若往返時間**嚴格大於 2 天**（例如 2日1小時、3日、91日等），系統不點 GO，自動點擊左下角「取消」退出。
                - 記錄並略過該過遠目標，自動在清單中挑選下一個探險目標進行派遣。
-            2. **修復全域觸控偏移**：
-               - 修正 Android 12 在開啟底部三鍵導航時，因系統只回傳可用區域（2140px）而螢幕緩衝區為全螢幕（2340px），造成所有點擊 Y 軸向上位移 80~150 像素的重大 Bug。
-               - 改用 `WindowManager.getMaximumWindowMetrics()` 取得物理 1080×2340 邊界，所有手勢與截圖達成 1:1 絕對對齊。
-            3. **修復「自動」按鈕選取失敗**：
-               - 擴大自動按鈕偵測範圍並加入模糊 OCR 比對，保證精準點擊皮克敏「自動」按鈕。
-            4. **修復「前往探險」超時停止**：
-               - 修正膠囊按鈕中心點擊座標，解決停留在目前步驟過久的中斷問題。
-          files: release_apk/PikminX-3.0.9-ROG3.apk
+            4. **全域觸控精準修復**：
+               - 修正 Android 12 在開啟底部三鍵導航時的 Y 軸偏高問題，完美適配 1080×2340 物理螢幕，消除所有偏移。
+          files: release_apk/rog1.0.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
