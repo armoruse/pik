@@ -174,7 +174,7 @@ public final class MainActivity extends Activity {
         LinearLayout card = card();
         card.addView(sectionTitle(R.string.main_update_title));
         addSpace(card, 6);
-        card.addView(sectionDescription(getString(R.string.main_current_version, BuildConfig.VERSION_NAME)));
+        card.addView(text(getString(R.string.main_current_version, BuildConfig.VERSION_NAME), 14, MUTED));
         addSpace(card, 12);
 
         Button checkUpdate = primaryButton(R.string.main_check_update);
