@@ -3869,16 +3869,19 @@ public final class PetalAccessibilityService extends AccessibilityService {
 
     /** 取得真實螢幕物理解析度與邊界（包含狀態列與虛擬導航列），避免三鍵導航造成 Y 軸偏移。 */
     private Rect getRealScreenBounds() {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
-            WindowManager wm = getSystemService(WindowManager.class);
-            if (wm != null) {
+        WindowManager wm = getSystemService(WindowManager.class);
+        if (wm != null) {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
                 return wm.getMaximumWindowMetrics().getBounds();
             }
+            Display display = wm.getDefaultDisplay();
+            DisplayMetrics realMetrics = new DisplayMetrics();
+            display.getRealMetrics(realMetrics);
+            return new Rect(0, 0, realMetrics.widthPixels, realMetrics.heightPixels);
         }
-        Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-        DisplayMetrics realMetrics = new DisplayMetrics();
-        display.getRealMetrics(realMetrics);
-        return new Rect(0, 0, realMetrics.widthPixels, realMetrics.heightPixels);
+        return new Rect(0, 0,
+                getResources().getDisplayMetrics().widthPixels,
+                getResources().getDisplayMetrics().heightPixels);
     }
 
     /** 收取模式每次手勢都要求目前根視窗確實屬於遊戲，不採用十秒事件容錯。 */
