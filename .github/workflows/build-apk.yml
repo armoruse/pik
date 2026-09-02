@@ -1,4 +1,4 @@
-﻿name: Build and Release PikminX APK
+name: Build and Release PikminX APK
 
 on:
   push:
