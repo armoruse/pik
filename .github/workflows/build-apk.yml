@@ -1,0 +1,65 @@
+﻿name: Build and Release PikminX APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.4'
+
+      - name: Build APK with Gradle
+        run: gradle assembleRelease --stacktrace
+
+      - name: Prepare APK artifact
+        run: |
+          mkdir -p release_apk
+          find build/outputs/apk/ -name "*.apk" -exec cp {} release_apk/PikminX-3.0.8-ROG3.apk \;
+          ls -lh release_apk/
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PikminX-3.0.8-ROG3-APK
+          path: release_apk/PikminX-3.0.8-ROG3.apk
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: github.ref == 'refs/heads/main'
+        with:
+          tag_name: v3.0.8-rog3
+          name: "PikminX v3.0.8 (ROG Phone 3 座標修復版)"
+          body: |
+            ## 🚀 PikminX v3.0.8 (ROG Phone 3 & 1080x2340 專屬座標適配版)
+            
+            ### 本次更新修復重點：
+            1. **修復全域觸控偏移**：
+               - 修正 Android 12 在開啟底部三鍵導航時，因系統只回傳可用區域（2140px）而螢幕緩衝區為全螢幕（2340px），造成所有點擊 Y 軸向上位移 80~150 像素的重大 Bug。
+               - 改用 `WindowManager.getMaximumWindowMetrics()` 取得物理 1080×2340 邊界，所有手勢與截圖達成 1:1 絕對對齊。
+            2. **修復「自動」按鈕選取失敗**：
+               - 擴大自動按鈕偵測範圍並加入模糊 OCR 比對，保證精準點擊皮克敏「自動」按鈕。
+            3. **修復「前往探險」超時停止**：
+               - 修正膠囊按鈕中心點擊座標，解決停留在目前步驟過久的中斷問題。
+            4. **修復精華與水果收取**：
+               - 手勢落點回歸螢幕正中心物體，不再點在物體上方空白處。
+          files: release_apk/PikminX-3.0.8-ROG3.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

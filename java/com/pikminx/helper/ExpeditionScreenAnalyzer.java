@@ -151,10 +151,10 @@ final class ExpeditionScreenAnalyzer {
 
     private static boolean isDetailActionRegion(
             PetalMatcher.Token token, int width, int height) {
-        return token.centerX() >= width * 0.20f
-                && token.centerX() <= width * 0.80f
-                && token.centerY() >= height * 0.60f
-                && token.centerY() <= height * 0.82f;
+        return token.centerX() >= width * 0.15f
+                && token.centerX() <= width * 0.85f
+                && token.centerY() >= height * 0.55f
+                && token.centerY() <= height * 0.88f;
     }
 
     static boolean looksLikeExploreList(List<PetalMatcher.Token> tokens) {
@@ -382,11 +382,14 @@ final class ExpeditionScreenAnalyzer {
             List<PetalMatcher.Token> tokens, int width, int height) {
         for (PetalMatcher.Token token : tokens) {
             String text = normalize(token.text());
-            if ((text.equals("自動") || text.equals("自动"))
+            boolean isAuto = text.equals("自動") || text.equals("自动")
+                    || text.equalsIgnoreCase("AUTO")
+                    || (text.length() <= 3 && (text.contains("自") || text.contains("動") || text.contains("动")));
+            if (isAuto
                     && token.centerX() > width * 0.04f
                     && token.centerX() < width * 0.55f
-                    && token.centerY() > height * 0.32f
-                    && token.centerY() < height * 0.50f) {
+                    && token.centerY() > height * 0.28f
+                    && token.centerY() < height * 0.55f) {
                 return new Point(token.centerX(), token.centerY());
             }
         }

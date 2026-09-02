@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.InputType;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
@@ -482,16 +483,13 @@ public final class PetalAccessibilityService extends AccessibilityService {
         AccessibilityNodeInfo root = getRootInActiveWindow();
         long sequence = ++captureSequence;
         Rect gameBounds = null;
+        Rect realScreenBounds = getRealScreenBounds();
         boolean gameWindowAvailable = root != null && GAME_PACKAGE.contentEquals(root.getPackageName());
         if (gameWindowAvailable) {
             gameBounds = new Rect();
             root.getBoundsInScreen(gameBounds);
             if (gameBounds.isEmpty()) {
-                gameBounds.set(
-                        0,
-                        0,
-                        getResources().getDisplayMetrics().widthPixels,
-                        getResources().getDisplayMetrics().heightPixels);
+                gameBounds.set(realScreenBounds);
             }
         }
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE
@@ -518,10 +516,10 @@ public final class PetalAccessibilityService extends AccessibilityService {
                         generation,
                         CaptureGeometry.Mode.DISPLAY,
                         new CaptureGeometry.Bounds(
-                                0,
-                                0,
-                                getResources().getDisplayMetrics().widthPixels,
-                                getResources().getDisplayMetrics().heightPixels),
+                                realScreenBounds.left,
+                                realScreenBounds.top,
+                                realScreenBounds.right,
+                                realScreenBounds.bottom),
                         gameBounds == null ? null : captureBounds(gameBounds),
                         Display.DEFAULT_DISPLAY,
                         sequence));
@@ -3869,6 +3867,20 @@ public final class PetalAccessibilityService extends AccessibilityService {
                 && android.os.SystemClock.elapsedRealtime() - recentPackageAt < 10_000;
     }
 
+    /** 取得真實螢幕物理解析度與邊界（包含狀態列與虛擬導航列），避免三鍵導航造成 Y 軸偏移。 */
+    private Rect getRealScreenBounds() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            WindowManager wm = getSystemService(WindowManager.class);
+            if (wm != null) {
+                return wm.getMaximumWindowMetrics().getBounds();
+            }
+        }
+        Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+        DisplayMetrics realMetrics = new DisplayMetrics();
+        display.getRealMetrics(realMetrics);
+        return new Rect(0, 0, realMetrics.widthPixels, realMetrics.heightPixels);
+    }
+
     /** 收取模式每次手勢都要求目前根視窗確實屬於遊戲，不採用十秒事件容錯。 */
     private Rect activeGameBoundsStrict() {
         AccessibilityNodeInfo root = getRootInActiveWindow();
@@ -3878,11 +3890,7 @@ public final class PetalAccessibilityService extends AccessibilityService {
         Rect bounds = new Rect();
         root.getBoundsInScreen(bounds);
         if (bounds.isEmpty()) {
-            bounds.set(
-                    0,
-                    0,
-                    getResources().getDisplayMetrics().widthPixels,
-                    getResources().getDisplayMetrics().heightPixels);
+            bounds.set(getRealScreenBounds());
         }
         return bounds;
     }
