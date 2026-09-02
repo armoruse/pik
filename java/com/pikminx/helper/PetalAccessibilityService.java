@@ -162,6 +162,7 @@ public final class PetalAccessibilityService extends AccessibilityService {
     private int postcardLastPikminCount = -1;
     private ExpeditionDispatchSession expeditionDispatchSession;
     private ExpeditionScreenAnalyzer.ItemKind dispatchCurrentItemKind;
+    private String dispatchCurrentItemKey = "";
     private ExpeditionTargetMode expeditionTargetMode = ExpeditionTargetMode.FRUIT_AND_POT;
     private DispatchSelectionMethod dispatchSelectionMethod = DispatchSelectionMethod.AUTO;
     private DispatchPikminType dispatchPikminType = DispatchPikminType.MIXED;
@@ -1123,7 +1124,8 @@ public final class PetalAccessibilityService extends AccessibilityService {
                         expeditionTargetMode,
                         width,
                         height,
-                        frame::pixelAtSource);
+                        frame::pixelAtSource,
+                        expeditionDispatchSession.skippedTargetKeys());
                 if (target == null) {
                     handleDispatchListMiss(listStartVisible, now);
                 } else {
@@ -1170,6 +1172,7 @@ public final class PetalAccessibilityService extends AccessibilityService {
             return;
         }
         dispatchCurrentItemKind = target.kind();
+        dispatchCurrentItemKey = target.confirmationKey(width, height);
         expeditionDispatchSession.beginTransition(now);
         dispatchActionTap(
                 new ExpeditionScreenAnalyzer.Point(target.x(), target.y()),
@@ -1202,6 +1205,11 @@ public final class PetalAccessibilityService extends AccessibilityService {
             if (!handleDispatchConfirmation(timeout)) {
                 waitForDispatchFrame(getString(R.string.status_reward_go_explore_waiting));
             }
+            return;
+        }
+        if (expeditionDispatchSession.isTargetSkipped(dispatchCurrentItemKey)) {
+            setStatus("返回清單挑選下一個");
+            performGlobalAction(GLOBAL_ACTION_BACK);
             return;
         }
         if (screen == ExpeditionScreenAnalyzer.Screen.EXPLORE_LIST) {
@@ -1349,6 +1357,24 @@ public final class PetalAccessibilityService extends AccessibilityService {
                 || (dispatchSelectionMethod.requiresFullSelection()
                         && !ExpeditionScreenAnalyzer.hasFullSelection(tokens))) {
             waitForDispatchFrame(getString(R.string.status_reward_selecting_pikmin));
+            return;
+        }
+        if (ExpeditionScreenAnalyzer.isTravelDurationOverTwoDays(tokens, bitmap.getHeight())) {
+            setStatus("探險時間大於 2 日，跳過換下一個");
+            if (dispatchCurrentItemKey != null && !dispatchCurrentItemKey.isEmpty()) {
+                expeditionDispatchSession.recordSkippedTarget(dispatchCurrentItemKey);
+            }
+            ExpeditionScreenAnalyzer.Point cancel = ExpeditionScreenAnalyzer.findPikminCancelButton(
+                    tokens, bitmap.getWidth(), bitmap.getHeight());
+            dispatchActionTap(
+                    cancel,
+                    "探險時間大於 2 日，取消並換下一個",
+                    () -> {
+                        dispatchPikminSelected = false;
+                        dispatchAutoTapAttempts = 0;
+                        dispatchAutoResultMissingFrames = 0;
+                        dispatchAutoControlMissingFrames = 0;
+                    });
             return;
         }
         ExpeditionDispatchSession.Confirmation confirmation = expeditionDispatchSession.confirm(

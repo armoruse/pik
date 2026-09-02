@@ -10,8 +10,8 @@ android {
         applicationId "com.pikminx.helper"
         minSdk 30
         targetSdk 34
-        versionCode 308
-        versionName "3.0.8-rog3"
+        versionCode 309
+        versionName "3.0.9-skip2days"
         buildConfigField "boolean", "GEOMETRY_VALIDATION", "false"
     }
 

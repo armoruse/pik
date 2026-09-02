@@ -1,5 +1,9 @@
 package com.pikminx.helper;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  *  派遣頁面順序的純狀態機。
  *
@@ -222,9 +226,12 @@ final class ExpeditionDispatchSession {
             case LIST_SEARCH -> screen == ExpeditionScreenAnalyzer.Screen.DETAIL
                     ? Stage.DETAIL : null;
             case DETAIL -> screen == ExpeditionScreenAnalyzer.Screen.PIKMIN_SELECTION
-                    ? Stage.SELECTION : null;
+                    ? Stage.SELECTION
+                    : (screen == ExpeditionScreenAnalyzer.Screen.EXPLORE_LIST ? Stage.LIST_SEARCH : null);
             case SELECTION -> screen == ExpeditionScreenAnalyzer.Screen.RESULT
-                    ? Stage.WAIT_RESULT : null;
+                    ? Stage.WAIT_RESULT
+                    : (screen == ExpeditionScreenAnalyzer.Screen.EXPLORE_LIST ? Stage.LIST_SEARCH
+                            : (screen == ExpeditionScreenAnalyzer.Screen.DETAIL ? Stage.DETAIL : null));
             case WAIT_RESULT -> screen == ExpeditionScreenAnalyzer.Screen.EXPLORE_LIST
                     ? Stage.VERIFY_RETURN : null;
             case VERIFY_RETURN -> null;
@@ -241,6 +248,34 @@ final class ExpeditionDispatchSession {
         matchingDestinationFrames++;
         return matchingDestinationFrames >= REQUIRED_DESTINATION_FRAMES
                 && advance(stage, next, nowMillis);
+    }
+
+    private final Set<String> skippedTargetKeys = new HashSet<>();
+
+    void recordSkippedTarget(String targetKey) {
+        if (targetKey != null && !targetKey.isEmpty()) {
+            skippedTargetKeys.add(targetKey);
+        }
+    }
+
+    Set<String> skippedTargetKeys() {
+        return Collections.unmodifiableSet(skippedTargetKeys);
+    }
+
+    boolean isTargetSkipped(String targetKey) {
+        return targetKey != null && skippedTargetKeys.contains(targetKey);
+    }
+
+    boolean recordCancelledBackToList(long nowMillis) {
+        stage = Stage.LIST_SEARCH;
+        stageStartedAt = nowMillis;
+        pendingKey = "";
+        matchingFrames = 0;
+        transitionPending = false;
+        resetDestinationEvidence();
+        resetListScan();
+        resetDetailTap();
+        return true;
     }
 
     boolean recordReturnedToList(long nowMillis) {
@@ -267,8 +302,8 @@ final class ExpeditionDispatchSession {
     private static boolean allowed(Stage from, Stage to) {
         return switch (from) {
             case LIST_SEARCH -> to == Stage.DETAIL;
-            case DETAIL -> to == Stage.SELECTION;
-            case SELECTION -> to == Stage.WAIT_RESULT;
+            case DETAIL -> to == Stage.SELECTION || to == Stage.LIST_SEARCH;
+            case SELECTION -> to == Stage.WAIT_RESULT || to == Stage.DETAIL || to == Stage.LIST_SEARCH;
             case WAIT_RESULT -> to == Stage.VERIFY_RETURN;
             case VERIFY_RETURN -> to == Stage.LIST_SEARCH;
         };

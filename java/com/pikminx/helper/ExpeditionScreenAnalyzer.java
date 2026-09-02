@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.function.IntBinaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -189,6 +190,16 @@ final class ExpeditionScreenAnalyzer {
             int width,
             int height,
             IntBinaryOperator pixelAt) {
+        return findTarget(tokens, mode, width, height, pixelAt, null);
+    }
+
+    static Target findTarget(
+            List<PetalMatcher.Token> tokens,
+            ExpeditionTargetMode mode,
+            int width,
+            int height,
+            IntBinaryOperator pixelAt,
+            Set<String> skippedKeys) {
         List<Target> candidates = new ArrayList<>();
         int itemSectionTop = -1;
         for (PetalMatcher.Token token : tokens) {
@@ -229,7 +240,12 @@ final class ExpeditionScreenAnalyzer {
                 continue;
             }
             int tapY = Math.max(token.top(), token.centerY() - Math.round(height * 0.025f));
-            candidates.add(new Target(kind, token.text(), token.centerX(), tapY));
+            Target candidate = new Target(kind, token.text(), token.centerX(), tapY);
+            if (skippedKeys != null && (skippedKeys.contains(candidate.confirmationKey(width, height))
+                    || skippedKeys.contains(text))) {
+                continue;
+            }
+            candidates.add(candidate);
         }
         return candidates.stream()
                 .max(Comparator.comparingInt(Target::y).thenComparingInt(Target::x))
@@ -457,6 +473,56 @@ final class ExpeditionScreenAnalyzer {
             }
         }
         return false;
+    }
+
+    /** 判斷皮克敏選滿後，預估探險時間是否嚴格大於 2 天整。 */
+    static boolean isTravelDurationOverTwoDays(List<PetalMatcher.Token> tokens, int height) {
+        StringBuilder sb = new StringBuilder();
+        for (PetalMatcher.Token token : tokens) {
+            if (token.centerY() < height * 0.26f) {
+                sb.append(normalize(token.text()));
+            }
+        }
+        String topText = sb.toString();
+        Matcher mDays = Pattern.compile("(\\d+)(?:日|天|D|DAYS|DAY)").matcher(topText);
+        int days = 0;
+        if (mDays.find()) {
+            days = Integer.parseInt(mDays.group(1));
+        }
+        Matcher mHours = Pattern.compile("(\\d+)(?:小時|小时|H|HRS|HR)").matcher(topText);
+        int hours = 0;
+        if (mHours.find()) {
+            hours = Integer.parseInt(mHours.group(1));
+        }
+        Matcher mMins = Pattern.compile("(\\d+)(?:分鐘|分钟|分|M|MIN|MINS)").matcher(topText);
+        int mins = 0;
+        if (mMins.find()) {
+            mins = Integer.parseInt(mMins.group(1));
+        }
+
+        if (days > 2) {
+            return true;
+        }
+        if (days == 2 && (hours > 0 || mins > 0)) {
+            return true;
+        }
+        if (days == 0 && hours > 48) {
+            return true;
+        }
+        return false;
+    }
+
+    /** 定位皮克敏選取頁左下角的「取消」按鈕。 */
+    static Point findPikminCancelButton(List<PetalMatcher.Token> tokens, int width, int height) {
+        for (PetalMatcher.Token token : tokens) {
+            String text = normalize(token.text());
+            if (containsAny(text, "取消", "CANCEL")
+                    && token.centerX() <= width * 0.40f
+                    && token.centerY() >= height * 0.80f) {
+                return new Point(token.centerX(), token.centerY());
+            }
+        }
+        return new Point(Math.round(width * 0.175f), Math.round(height * 0.922f));
     }
 
     /** 回傳選取頁計數的已選數量；找不到合法的 0/10 類計數時回傳 -1。 */
