@@ -21,6 +21,7 @@ Windows 建議解壓到較短的路徑，例如 `C:\dev\pikminx`。若以 Git �
 ```powershell
 git -c core.longpaths=true clone --branch codex/rog3-handover-20261014 https://github.com/armoruse/pik.git
 git -C pik config core.longpaths true
+Set-Location .\pik\rog3
 ```
 
 1. 安裝 Java 17 執行環境。Python 3 僅在執行輔助腳本時需要；像素分析另外需要 Pillow 與 NumPy。

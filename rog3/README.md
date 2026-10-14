@@ -18,7 +18,7 @@ APK 和大型移機包以 Release 附件保存。程式碼可直接 clone 到另
 
 ## 新電腦重組
 
-需要 Java 17；Windows ADB 已附於 `tools/platform-tools`。其他系統請使用對應的 Google Platform-Tools。
+需要 Java 17；Windows ADB 已附於 `tools/platform-tools`。其他系統請使用對應的 Google Platform-Tools。從儲存庫 clone 後，先進入 `rog3` 資料夾再執行以下指令；移機包則直接以解壓根目錄執行。
 
 ```powershell
 java -jar './tools/apktool.jar' b './work/rog_src' -o './work/repacked-unsigned.apk'
