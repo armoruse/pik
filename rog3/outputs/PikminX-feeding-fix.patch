@@ -1,0 +1,418 @@
+--- a/smali_classes3/com/pikminx/helper/PetalAccessibilityService.smali
++++ b/smali_classes3/com/pikminx/helper/PetalAccessibilityService.smali
+@@ -3418,7 +3418,7 @@
+ 
+     int-to-float v1, v1
+ 
+-    const v3, 0x3e4ccccd    # 0.2f
++    const v3, 0x3f000000    # 0.5f
+ 
+     mul-float/2addr v1, v3
+ 
+@@ -3432,7 +3432,7 @@
+ 
+     int-to-float v0, v0
+ 
+-    const v3, 0x3e3851ec    # 0.18f
++    const v3, 0x3e03126f    # 0.128f
+ 
+     mul-float/2addr v0, v3
+ 
+@@ -3443,9 +3443,9 @@
+     goto :goto_tap
+ 
+     :cond_use_defaults
+-    const/16 v1, 0xd8
+-
+-    const/16 v0, 0x1a4
++    const/16 v1, 0x21c
++
++    const/16 v0, 0x12c
+ 
+     :goto_tap
+     move v2, v0
+@@ -14183,6 +14183,9 @@
+ 
+     .line 1687
+     :pswitch_d
++    invoke-direct {v7, v8}, Lcom/pikminx/helper/PetalAccessibilityService;->closeFeedPikminDetailIfOpen(Ljava/util/List;)Z
++    move-result v0
++    if-nez v0, :goto_f
+     invoke-direct {v7, v9}, Lcom/pikminx/helper/PetalAccessibilityService;->openFeedNectarSearch(Landroid/graphics/Bitmap;)V
+ 
+     goto/16 :goto_f
+@@ -24726,65 +24729,22 @@
+     .end local v3    # "tapY":I
+     :cond_3
+     iget v0, v7, Lcom/pikminx/helper/PetalAccessibilityService;->feedSearchMissingFrames:I
+-
+-    add-int/2addr v0, v1
+-
++    add-int/lit8 v0, v0, 0x1
+     iput v0, v7, Lcom/pikminx/helper/PetalAccessibilityService;->feedSearchMissingFrames:I
+-
+-    .line 2014
+-    iget v0, v7, Lcom/pikminx/helper/PetalAccessibilityService;->feedSearchMissingFrames:I
+-
+-    if-ge v0, v1, :cond_4
+-
+-    .line 2015
+-    sget v0, Lcom/pikminx/helper/R$string;->status_feed_opening_search:I
+-
++    const/4 v1, 0x3
++    if-lt v0, v1, :search_anchor_retry
++    sget v0, Lcom/pikminx/helper/R$string;->status_feed_search_open_failed:I
+     invoke-virtual {p0, v0}, Lcom/pikminx/helper/PetalAccessibilityService;->getString(I)Ljava/lang/String;
+-
+     move-result-object v0
+-
+-    invoke-direct {p0, v0}, Lcom/pikminx/helper/PetalAccessibilityService;->statusFeed(Ljava/lang/String;)V
+-
+-    .line 2016
+-    const-wide/16 v0, 0x12c
+-
++    invoke-direct {p0, v0}, Lcom/pikminx/helper/PetalAccessibilityService;->stopWithError(Ljava/lang/String;)V
++    return-void
++    :search_anchor_retry
++    sget-object v0, Lcom/pikminx/helper/PetalAccessibilityService$FeedStep;->OPENING_NECTAR:Lcom/pikminx/helper/PetalAccessibilityService$FeedStep;
++    iput-object v0, v7, Lcom/pikminx/helper/PetalAccessibilityService;->feedStep:Lcom/pikminx/helper/PetalAccessibilityService$FeedStep;
++    const-wide/16 v0, 0x2bc
+     invoke-direct {p0, v0, v1}, Lcom/pikminx/helper/PetalAccessibilityService;->schedule(J)V
+-
+-    .line 2017
+-    return-void
+-
+-    .line 2019
+-    :cond_4
+-    int-to-float v0, v8
+-
+-    const v2, 0x3f68f5c3    # 0.91f
+-
+-    mul-float/2addr v0, v2
+-
+-    invoke-static {v0}, Ljava/lang/Math;->round(F)I
+-
+-    move-result v2
+-
+-    .line 2020
+-    .restart local v2    # "tapX":I
+-    int-to-float v0, v9
+-
+-    const v3, 0x3e19999a    # 0.15f
+-
+-    mul-float/2addr v0, v3
+-
+-    invoke-static {v0}, Ljava/lang/Math;->round(F)I
+-
+-    move-result v3
+-
+-    move v13, v2
+-
+-    move v14, v3
+-
+-    .line 2023
+-    .end local v2    # "tapX":I
+-    .local v13, "tapX":I
+-    .local v14, "tapY":I
++    return-void
++
+     :goto_1
+     iget v0, v7, Lcom/pikminx/helper/PetalAccessibilityService;->feedSearchActionAttempts:I
+ 
+@@ -39405,7 +39365,7 @@
+ 
+     const/4 v5, 0x0
+ 
+-    const-wide/16 v6, 0x1f4
++    const-wide/16 v6, 0x2bc
+ 
+     const/4 v8, 0x0
+ 
+--- a/smali_classes3/com/pikminx/helper/CardHighlight.smali
++++ b/smali_classes3/com/pikminx/helper/CardHighlight.smali
+@@ -1666,19 +1666,21 @@
+     return-object v1
+ .end method
+ 
+-.method private static findNeutralDarkControl(IIFLjava/util/function/IntBinaryOperator;)Lcom/pikminx/helper/CardHighlight$Point;
++.method private static findNeutralDarkControl(IIFIILjava/util/function/IntBinaryOperator;)Lcom/pikminx/helper/CardHighlight$Point;
+     .locals 38
+     .param p0, "width"    # I
+     .param p1, "height"    # I
+     .param p2, "xFraction"    # F
+-    .param p3, "pixelAt"    # Ljava/util/function/IntBinaryOperator;
++    .param p3, "requestedStartY"    # I
++    .param p4, "requestedEndY"    # I
++    .param p5, "pixelAt"    # Ljava/util/function/IntBinaryOperator;
+ 
+     .line 631
+     move/from16 v0, p0
+ 
+     move/from16 v1, p1
+ 
+-    move-object/from16 v2, p3
++    move-object/from16 v2, p5
+ 
+     int-to-float v3, v0
+ 
+@@ -1698,27 +1700,15 @@
+ 
+     .line 632
+     .local v3, "radius":I
+-    int-to-float v4, v1
+-
+-    const v5, 0x3de147ae    # 0.11f
+-
+-    mul-float/2addr v4, v5
+-
+-    invoke-static {v4}, Ljava/lang/Math;->round(F)I
+-
++    move/from16 v4, p3
++    invoke-static {v3, v4}, Ljava/lang/Math;->max(II)I
+     move-result v4
+-
+-    .line 633
+-    .local v4, "startY":I
+-    int-to-float v5, v1
+-
+-    const v6, 0x3e75c28f    # 0.24f
+-
+-    mul-float/2addr v5, v6
+-
+-    invoke-static {v5}, Ljava/lang/Math;->round(F)I
+-
++    move/from16 v5, p4
++    sub-int v6, v1, v3
++    add-int/lit8 v6, v6, -0x1
++    invoke-static {v6, v5}, Ljava/lang/Math;->min(II)I
+     move-result v5
++    if-gt v4, v5, :anchor_empty
+ 
+     .line 634
+     .local v5, "endY":I
+@@ -2637,69 +2627,166 @@
+     const/4 v0, 0x0
+ 
+     return-object v0
+-.end method
+-
+-.method static findPetalSearchButton(IILjava/util/function/IntBinaryOperator;)Lcom/pikminx/helper/CardHighlight$Point;
+-    .locals 1
+-    .param p0, "width"    # I
+-    .param p1, "height"    # I
+-    .param p2, "pixelAt"    # Ljava/util/function/IntBinaryOperator;
+-
+-    .line 30
+-    const v0, 0x3f68f5c3    # 0.91f
+-
+-    invoke-static {p0, p1, v0, p2}, Lcom/pikminx/helper/CardHighlight;->findNeutralDarkControl(IIFLjava/util/function/IntBinaryOperator;)Lcom/pikminx/helper/CardHighlight$Point;
+-
+-    move-result-object v0
+-
++    :anchor_empty
++    const/4 v0, 0x0
+     return-object v0
+ .end method
+ 
++.method private static findPetalSelectorY(IILjava/util/function/IntBinaryOperator;)I
++    .locals 20
++    move/from16 v1, p0
++    move-object/from16 v6, p2
++    new-instance v17, Lcom/pikminx/helper/CardHighlight$$ExternalSyntheticLambda0;
++    invoke-direct/range {v17 .. v17}, Lcom/pikminx/helper/CardHighlight$$ExternalSyntheticLambda0;-><init>()V
++    new-instance v18, Lcom/pikminx/helper/CardHighlight$$ExternalSyntheticLambda1;
++    invoke-direct/range {v18 .. v18}, Lcom/pikminx/helper/CardHighlight$$ExternalSyntheticLambda1;-><init>()V
++    new-instance v19, Lcom/pikminx/helper/CardHighlight$$ExternalSyntheticLambda2;
++    invoke-direct/range {v19 .. v19}, Lcom/pikminx/helper/CardHighlight$$ExternalSyntheticLambda2;-><init>()V
++    div-int/lit8 v7, v1, 0x64
++    const/4 v0, 0x5
++    invoke-static {v0, v7}, Ljava/lang/Math;->max(II)I
++    move-result v7
++    move/from16 v0, p1
++    int-to-float v0, v0
++    const v2, 0x3cf5c28f    # 0.03f
++    mul-float/2addr v0, v2
++    invoke-static {v0}, Ljava/lang/Math;->round(F)I
++    move-result v8
++    move/from16 v0, p1
++    int-to-float v0, v0
++    const v2, 0x3f4ccccd    # 0.8f
++    mul-float/2addr v0, v2
++    invoke-static {v0}, Ljava/lang/Math;->round(F)I
++    move-result v9
++    const/4 v10, -0x1
++    const/4 v11, -0x1
++    const/4 v12, -0x1
++    move v13, v8
++    :row_loop
++    if-gt v13, v9, :rows_done
++    move v0, v13
++    move v4, v7
++    const v2, 0x3de147ae    # 0.11f
++    const v3, 0x3e570a3d    # 0.21f
++    move-object/from16 v5, v17
++    invoke-static/range {v0 .. v6}, Lcom/pikminx/helper/CardHighlight;->colorCenterAt(IIFFILjava/util/function/IntPredicate;Ljava/util/function/IntBinaryOperator;)I
++    move-result v14
++    if-ltz v14, :row_not_matched
++    const v2, 0x3e428f5c    # 0.19f
++    const v3, 0x3e947ae1    # 0.29f
++    move-object/from16 v5, v18
++    invoke-static/range {v0 .. v6}, Lcom/pikminx/helper/CardHighlight;->colorCenterAt(IIFFILjava/util/function/IntPredicate;Ljava/util/function/IntBinaryOperator;)I
++    move-result v15
++    if-ltz v15, :row_not_matched
++    const v2, 0x3e8a3d71    # 0.27f
++    const v3, 0x3ec28f5c    # 0.38f
++    move-object/from16 v5, v19
++    invoke-static/range {v0 .. v6}, Lcom/pikminx/helper/CardHighlight;->colorCenterAt(IIFFILjava/util/function/IntPredicate;Ljava/util/function/IntBinaryOperator;)I
++    move-result v16
++    if-ltz v16, :row_not_matched
++    if-gez v10, :next_row
++    move v10, v13
++    goto :next_row
++    :row_not_matched
++    if-ltz v10, :next_row
++    add-int/lit8 v14, v13, -0x1
++    sub-int v15, v14, v10
++    sub-int v0, v12, v11
++    if-le v15, v0, :reset_run
++    move v11, v10
++    move v12, v14
++    :reset_run
++    const/4 v10, -0x1
++    :next_row
++    add-int/lit8 v13, v13, 0x1
++    goto :row_loop
++    :rows_done
++    if-ltz v10, :selector_result
++    sub-int v15, v9, v10
++    sub-int v0, v12, v11
++    if-le v15, v0, :selector_result
++    move v11, v10
++    move v12, v9
++    :selector_result
++    if-gez v11, :selector_found
++    const/4 v0, -0x1
++    return v0
++    :selector_found
++    add-int v0, v11, v12
++    div-int/lit8 v0, v0, 0x2
++    return v0
++.end method
++
++.method static findPetalSearchButton(IILjava/util/function/IntBinaryOperator;)Lcom/pikminx/helper/CardHighlight$Point;
++    .locals 6
++    invoke-static {p0, p1, p2}, Lcom/pikminx/helper/CardHighlight;->findPetalSelectorY(IILjava/util/function/IntBinaryOperator;)I
++    move-result v3
++    if-gez v3, :search_anchor_found
++    const/4 v0, 0x0
++    return-object v0
++    :search_anchor_found
++    int-to-float v0, p1
++    const v1, 0x3ccccccd    # 0.025f
++    mul-float/2addr v0, v1
++    invoke-static {v0}, Ljava/lang/Math;->round(F)I
++    move-result v0
++    const/16 v1, 0x8
++    invoke-static {v1, v0}, Ljava/lang/Math;->max(II)I
++    move-result v0
++    add-int v4, v3, v0
++    sub-int/2addr v3, v0
++    move v0, p0
++    move v1, p1
++    const v2, 0x3f68f5c3    # 0.91f
++    move-object v5, p2
++    invoke-static/range {v0 .. v5}, Lcom/pikminx/helper/CardHighlight;->findNeutralDarkControl(IIFIILjava/util/function/IntBinaryOperator;)Lcom/pikminx/helper/CardHighlight$Point;
++    move-result-object v0
++    return-object v0
++.end method
++
+ .method static findPetalSearchCloseButton(IILjava/util/function/IntBinaryOperator;)Lcom/pikminx/helper/CardHighlight$Point;
+-    .locals 4
+-    .param p0, "width"    # I
+-    .param p1, "height"    # I
+-    .param p2, "pixelAt"    # Ljava/util/function/IntBinaryOperator;
+-
+-    .line 180
+-    const v0, 0x3da3d70a    # 0.08f
+-
+-    invoke-static {p0, p1, v0, p2}, Lcom/pikminx/helper/CardHighlight;->findNeutralDarkControl(IIFLjava/util/function/IntBinaryOperator;)Lcom/pikminx/helper/CardHighlight$Point;
+-
+-    move-result-object v0
+-
+-    .line 181
+-    .local v0, "magnifier":Lcom/pikminx/helper/CardHighlight$Point;
+-    if-nez v0, :cond_0
+-
+-    .line 182
+-    const/4 v1, 0x0
+-
+-    goto :goto_0
+-
+-    .line 183
+-    :cond_0
+-    new-instance v1, Lcom/pikminx/helper/CardHighlight$Point;
+-
+-    int-to-float v2, p0
+-
+-    const v3, 0x3f68f5c3    # 0.91f
+-
+-    mul-float/2addr v2, v3
+-
+-    invoke-static {v2}, Ljava/lang/Math;->round(F)I
+-
+-    move-result v2
+-
+-    invoke-virtual {v0}, Lcom/pikminx/helper/CardHighlight$Point;->y()I
+-
+-    move-result v3
+-
+-    invoke-direct {v1, v2, v3}, Lcom/pikminx/helper/CardHighlight$Point;-><init>(II)V
+-
+-    .line 181
+-    :goto_0
+-    return-object v1
++    .locals 7
++    invoke-static {p0, p1, p2}, Lcom/pikminx/helper/CardHighlight;->findPetalSelectorY(IILjava/util/function/IntBinaryOperator;)I
++    move-result v6
++    if-gez v6, :close_anchor_found
++    const/4 v0, 0x0
++    return-object v0
++    :close_anchor_found
++    int-to-float v0, p1
++    const v1, 0x3ccccccd    # 0.025f
++    mul-float/2addr v0, v1
++    invoke-static {v0}, Ljava/lang/Math;->round(F)I
++    move-result v0
++    const/16 v1, 0x8
++    invoke-static {v1, v0}, Ljava/lang/Math;->max(II)I
++    move-result v0
++    sub-int v4, v6, v0
++    int-to-float v0, p1
++    const v1, 0x3db851ec    # 0.09f
++    mul-float/2addr v0, v1
++    invoke-static {v0}, Ljava/lang/Math;->round(F)I
++    move-result v0
++    sub-int v3, v6, v0
++    move v0, p0
++    move v1, p1
++    const v2, 0x3da3d70a    # 0.08f
++    move-object v5, p2
++    invoke-static/range {v0 .. v5}, Lcom/pikminx/helper/CardHighlight;->findNeutralDarkControl(IIFIILjava/util/function/IntBinaryOperator;)Lcom/pikminx/helper/CardHighlight$Point;
++    move-result-object v6
++    if-nez v6, :close_found
++    const/4 v0, 0x0
++    return-object v0
++    :close_found
++    int-to-float v0, p0
++    const v1, 0x3f68f5c3    # 0.91f
++    mul-float/2addr v0, v1
++    invoke-static {v0}, Ljava/lang/Math;->round(F)I
++    move-result v0
++    invoke-virtual {v6}, Lcom/pikminx/helper/CardHighlight$Point;->y()I
++    move-result v1
++    new-instance v2, Lcom/pikminx/helper/CardHighlight$Point;
++    invoke-direct {v2, v0, v1}, Lcom/pikminx/helper/CardHighlight$Point;-><init>(II)V
++    return-object v2
+ .end method
+ 
+ .method static findPlantingMenuControls(IILjava/util/function/IntBinaryOperator;)Lcom/pikminx/helper/CardHighlight$PlantingMenuControls;

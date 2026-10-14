@@ -1,5 +1,10 @@
 # PikminX
 
+## ROG Phone 3 維護與跨電腦接手
+
+[ROG3 維護工作區](rog3/README.md) 包含完整 Smali 來源、辨識修正、打包工具及接手文件。最新 APK 與公開移機包放在 [Releases](https://github.com/armoruse/pik/releases)。此維護版仍待完成完整餵食與最新效能版的實機驗證，詳見 [目前狀態](rog3/HANDOVER.md)。
+
+
 > **授權聲明**：本專案為原始碼公開專案（Source-available），採用非商業使用授權。未經作者書面同意，禁止任何商業形式之使用。
 
 PikminX 是一個基於 Android 無障礙服務（AccessibilityService）開發的 Pikmin Bloom 輔助工具。

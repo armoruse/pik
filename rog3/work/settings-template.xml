@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<map>
+    <string name="flowers">白色精華</string>
+    <int name="feeds_per_squad" value="1" />
+    <int name="max_squad_switches" value="0" />
+    <int name="nectar_minimum_threshold" value="0" />
+    <int name="feed_petal_limit" value="600" />
+    <int name="threshold" value="50" />
+</map>
