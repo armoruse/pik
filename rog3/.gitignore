@@ -1,0 +1,26 @@
+# 重組產物與 Release 附件
+work/rog_src/build/
+work/rog_src/dist/
+*.apk
+*.aab
+*.zip
+
+# 私鑰與本機帳號設定
+*.keystore
+*.jks
+*.p12
+*.pfx
+.env
+.env.*
+!*.example
+local.properties
+
+# 實機私人紀錄放在本機私人移機包
+work/settings-before-test.xml
+work/settings-test.xml
+work/*.png
+work/mushrooms.json
+
+# 暫存
+__pycache__/
+*.pyc

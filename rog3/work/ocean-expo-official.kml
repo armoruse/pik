@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Walk Anytime Mini in Ocean Expo Park</name>
+    <description/>
+    <Style id="icon-1899-FF5252-normal">
+      <IconStyle>
+        <color>ff5252ff</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+        <hotSpot x="32" xunits="pixels" y="64" yunits="insetPixels"/>
+      </IconStyle>
+      <LabelStyle>
+        <scale>0</scale>
+      </LabelStyle>
+    </Style>
+    <Style id="icon-1899-FF5252-highlight">
+      <IconStyle>
+        <color>ff5252ff</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+        <hotSpot x="32" xunits="pixels" y="64" yunits="insetPixels"/>
+      </IconStyle>
+      <LabelStyle>
+        <scale>1</scale>
+      </LabelStyle>
+    </Style>
+    <StyleMap id="icon-1899-FF5252">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#icon-1899-FF5252-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#icon-1899-FF5252-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Folder>
+      <name>Special Spots</name>
+      <Placemark>
+        <name>Okinawa Churaumi Aquarium</name>
+        <description><![CDATA[Postcard<br><br>Lat: 26.6935113<br>Long: 127.8778507]]></description>
+        <styleUrl>#icon-1899-FF5252</styleUrl>
+        <ExtendedData>
+          <Data name="Lat">
+            <value>26.6935113</value>
+          </Data>
+          <Data name="Long">
+            <value>127.8778507</value>
+          </Data>
+        </ExtendedData>
+        <Point>
+          <coordinates>
+            127.8778507,26.6935113,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>Okichan Theater</name>
+        <description><![CDATA[Postcard<br><br>Lat: 26.69292531649062<br>Long: 127.87583184102435]]></description>
+        <styleUrl>#icon-1899-FF5252</styleUrl>
+        <ExtendedData>
+          <Data name="Lat">
+            <value>26.69292531649062</value>
+          </Data>
+          <Data name="Long">
+            <value>127.87583184102435</value>
+          </Data>
+        </ExtendedData>
+        <Point>
+          <coordinates>
+            127.875831841024,26.6929253164906,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>Native Okinawan Village</name>
+        <description><![CDATA[Gold Seedling: Summer Sticker<br><br>Lat: 26.69093722582023<br>Long: 127.87751805061991]]></description>
+        <styleUrl>#icon-1899-FF5252</styleUrl>
+        <ExtendedData>
+          <Data name="Lat">
+            <value>26.69093722582023</value>
+          </Data>
+          <Data name="Long">
+            <value>127.87751805061991</value>
+          </Data>
+        </ExtendedData>
+        <Point>
+          <coordinates>
+            127.87751805062,26.6909372258202,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>Tropical Dream Center</name>
+        <description><![CDATA[Gold Seedling: Photo Button Badge<br><br>Lat: 26.68772713015434<br>Long: 127.87615676863392]]></description>
+        <styleUrl>#icon-1899-FF5252</styleUrl>
+        <ExtendedData>
+          <Data name="Lat">
+            <value>26.68772713015434</value>
+          </Data>
+          <Data name="Long">
+            <value>127.87615676863392</value>
+          </Data>
+        </ExtendedData>
+        <Point>
+          <coordinates>
+            127.876156768634,26.6877271301543,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>Oceanic Culture Museum</name>
+        <description><![CDATA[Gold Seedling: Coral<br><br>Lat: 26.690654021766964<br>Long: 127.8779715778023]]></description>
+        <styleUrl>#icon-1899-FF5252</styleUrl>
+        <ExtendedData>
+          <Data name="Lat">
+            <value>26.690654021766964</value>
+          </Data>
+          <Data name="Long">
+            <value>127.8779715778023</value>
+          </Data>
+        </ExtendedData>
+        <Point>
+          <coordinates>
+            127.877971577802,26.690654021767,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>Emerald Beach</name>
+        <description><![CDATA[Gold Seedling: Surfboard Keychain<br><br>Lat: 26.69846862718161<br>Long: 127.87858983122686]]></description>
+        <styleUrl>#icon-1899-FF5252</styleUrl>
+        <ExtendedData>
+          <Data name="Lat">
+            <value>26.69846862718161</value>
+          </Data>
+          <Data name="Long">
+            <value>127.87858983122686</value>
+          </Data>
+        </ExtendedData>
+        <Point>
+          <coordinates>
+            127.878589831227,26.6984686271816,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>Sunset Square</name>
+        <description><![CDATA[Postcard<br><br>Lat: 26.68488064585715<br>Long: 127.87518522050692]]></description>
+        <styleUrl>#icon-1899-FF5252</styleUrl>
+        <ExtendedData>
+          <Data name="Lat">
+            <value>26.68488064585715</value>
+          </Data>
+          <Data name="Long">
+            <value>127.87518522050692</value>
+          </Data>
+        </ExtendedData>
+        <Point>
+          <coordinates>
+            127.875185220507,26.6848806458571,0
+          </coordinates>
+        </Point>
+      </Placemark>
+    </Folder>
+  </Document>
+</kml>
