@@ -24,3 +24,10 @@ work/mushrooms.json
 # 暫存
 __pycache__/
 *.pyc
+
+# 本機編譯暫存（只提交來源與必要 Smali）
+work/handover-build/
+*.class
+*.log
+.venv/
+venv/

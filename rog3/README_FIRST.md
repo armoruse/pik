@@ -1,3 +1,5 @@
+> 2026-10-23 最新接手：先閱讀儲存庫根目錄 `AGENTS.md` 與 `rog3/CURRENT_STATUS.md`。跨裝置操作見 `rog3/CROSS_DEVICE.md`，可貼上的提示詞見 `rog3/HANDOFF_PROMPT.md`。下文保留原始交接；版本與驗證狀態可能已變更。
+
 # PikminX 跨電腦接手包
 
 解壓縮到新電腦上的獨立工作資料夾後，先完整閱讀 `HANDOVER.md`，再看 `outputs/PikminX-資源與部署研究.md`。所有工作路徑都以本資料夾為根目錄。`docs/AI_HANDOVER_GUIDE-original.md` 保留舊交接文件作為歷史參考，其中的舊電腦路徑不適用於新電腦。

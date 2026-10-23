@@ -12,8 +12,8 @@ packageInfo:
   forcedPackageId: 127
   renameManifestPackage: null
 versionInfo:
-  versionCode: 309
-  versionName: rog1.0.1
+  versionCode: 310
+  versionName: rog1.0.2-maintenance
 resourcesAreCompressed: false
 sharedLibrary: false
 sparseResources: false

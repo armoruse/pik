@@ -1062,3 +1062,15 @@
 
     return v0
 .end method
+
+.method allowedPlantingFlowers()Ljava/util/List;
+    .locals 3
+    iget-object v0, p0, Lcom/pikminx/helper/SettingsStore;->preferences:Landroid/content/SharedPreferences;
+    const-string v1, "planting_flowers"
+    const-string v2, "白色花瓣\n黃色花瓣\n紅色花瓣\n藍色花瓣"
+    invoke-interface {v0, v1, v2}, Landroid/content/SharedPreferences;->getString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v0
+    invoke-static {v0}, Lcom/pikminx/helper/RogHandoverControls;->parsePetals(Ljava/lang/String;)Ljava/util/List;
+    move-result-object v0
+    return-object v0
+.end method

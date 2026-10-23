@@ -851,6 +851,8 @@
     .line 89
     iput-wide p2, p0, Lcom/pikminx/helper/ExpeditionDispatchSession;->stageStartedAt:J
 
+    if-nez p1, :cond_0
+
     .line 90
     sget-object v0, Lcom/pikminx/helper/ExpeditionDispatchSession$BottomSettleDecision;->SWIPE_UP:Lcom/pikminx/helper/ExpeditionDispatchSession$BottomSettleDecision;
 

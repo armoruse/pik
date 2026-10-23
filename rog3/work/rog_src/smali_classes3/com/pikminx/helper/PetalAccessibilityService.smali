@@ -5207,7 +5207,7 @@
     iget-object v0, p0, Lcom/pikminx/helper/PetalAccessibilityService;->settings:Lcom/pikminx/helper/SettingsStore;
 
     .line 4473
-    invoke-virtual {v0}, Lcom/pikminx/helper/SettingsStore;->allowedFlowers()Ljava/util/List;
+    invoke-virtual {v0}, Lcom/pikminx/helper/SettingsStore;->allowedPlantingFlowers()Ljava/util/List;
 
     move-result-object v0
 
@@ -8394,6 +8394,12 @@
 .method private finishWithSuccess(Ljava/lang/String;)V
     .locals 6
     .param p1, "message"    # Ljava/lang/String;
+
+    iget-object v0, p0, Lcom/pikminx/helper/PetalAccessibilityService;->automationMode:Lcom/pikminx/helper/PetalAccessibilityService$AutomationMode;
+    invoke-virtual {v0}, Ljava/lang/Enum;->name()Ljava/lang/String;
+    move-result-object v0
+    const-string v1, "SUCCESS"
+    invoke-static {p0, v0, v1, p1}, Lcom/pikminx/helper/RogHandoverControls;->recordResult(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
 
     .line 6894
     iget-object v0, p0, Lcom/pikminx/helper/PetalAccessibilityService;->automationMode:Lcom/pikminx/helper/PetalAccessibilityService$AutomationMode;
@@ -13211,6 +13217,12 @@
 
     .line 1914
     :cond_e
+    iget v10, v7, Lcom/pikminx/helper/PetalAccessibilityService;->feedNectarBeforeRound:I
+    invoke-virtual {v4}, Ljava/lang/Integer;->intValue()I
+    move-result v11
+    iget v12, v7, Lcom/pikminx/helper/PetalAccessibilityService;->feedCollectedPetals:I
+    invoke-static {v7, v10, v11, v12}, Lcom/pikminx/helper/RogHandoverControls;->recordRound(Landroid/content/Context;III)V
+
     new-instance v10, Ljava/lang/StringBuilder;
 
     invoke-direct {v10}, Ljava/lang/StringBuilder;-><init>()V
@@ -15569,7 +15581,7 @@
     iget-object v8, p0, Lcom/pikminx/helper/PetalAccessibilityService;->settings:Lcom/pikminx/helper/SettingsStore;
 
     .line 1374
-    invoke-virtual {v8}, Lcom/pikminx/helper/SettingsStore;->allowedFlowers()Ljava/util/List;
+    invoke-virtual {v8}, Lcom/pikminx/helper/SettingsStore;->allowedPlantingFlowers()Ljava/util/List;
 
     move-result-object v8
 
@@ -18563,7 +18575,7 @@
     .local v5, "height":I
     iget-object v6, v0, Lcom/pikminx/helper/PetalAccessibilityService;->settings:Lcom/pikminx/helper/SettingsStore;
 
-    invoke-virtual {v6}, Lcom/pikminx/helper/SettingsStore;->allowedFlowers()Ljava/util/List;
+    invoke-virtual {v6}, Lcom/pikminx/helper/SettingsStore;->allowedPlantingFlowers()Ljava/util/List;
 
     move-result-object v6
 
@@ -27589,7 +27601,17 @@
 
     .line 3796
     :cond_1
-    move-object v1, p1
+    invoke-virtual {p2}, Landroid/graphics/Bitmap;->getWidth()I
+
+    move-result v2
+
+    invoke-virtual {p2}, Landroid/graphics/Bitmap;->getHeight()I
+
+    move-result v3
+
+    invoke-static {p1, v2, v3}, Lcom/pikminx/helper/RogExplorePanelPull;->start(Lcom/pikminx/helper/ExpeditionScreenAnalyzer$Point;II)Lcom/pikminx/helper/ExpeditionScreenAnalyzer$Point;
+
+    move-result-object v1
 
     :goto_0
     nop
@@ -31720,7 +31742,7 @@
 
     move-result-object v1
 
-    const-string v2, "rog1.0.1"
+    const-string v2, "rog1.0.2-maintenance"
 
     invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
@@ -31947,6 +31969,8 @@
 
     .line 6240
     invoke-virtual {v12, v8}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
+
+    invoke-static {v15, v12}, Lcom/pikminx/helper/RogHandoverControls;->attach(Lcom/pikminx/helper/PetalAccessibilityService;Landroid/widget/LinearLayout;)V
 
     .line 6242
     new-instance v0, Landroid/widget/LinearLayout;
@@ -34928,10 +34952,13 @@
 .method private startAutomation()V
     .locals 4
 
+    const-string v0, "PLANTING"
+    invoke-static {p0, v0}, Lcom/pikminx/helper/RogHandoverControls;->begin(Landroid/content/Context;Ljava/lang/String;)V
+
     .line 443
     iget-object v0, p0, Lcom/pikminx/helper/PetalAccessibilityService;->settings:Lcom/pikminx/helper/SettingsStore;
 
-    invoke-virtual {v0}, Lcom/pikminx/helper/SettingsStore;->allowedFlowers()Ljava/util/List;
+    invoke-virtual {v0}, Lcom/pikminx/helper/SettingsStore;->allowedPlantingFlowers()Ljava/util/List;
 
     move-result-object v0
 
@@ -35359,6 +35386,9 @@
 .method private startFeedAutomation(Lcom/pikminx/helper/FeedSettingsInput;)V
     .locals 9
     .param p1, "feedSettingsInput"    # Lcom/pikminx/helper/FeedSettingsInput;
+
+    const-string v0, "FEED"
+    invoke-static {p0, v0}, Lcom/pikminx/helper/RogHandoverControls;->begin(Landroid/content/Context;Ljava/lang/String;)V
 
     .line 1397
     invoke-direct {p0}, Lcom/pikminx/helper/PetalAccessibilityService;->hideSeedlingNextButton()V
@@ -36780,6 +36810,12 @@
 .method private stopWithError(Ljava/lang/String;)V
     .locals 3
     .param p1, "message"    # Ljava/lang/String;
+
+    iget-object v0, p0, Lcom/pikminx/helper/PetalAccessibilityService;->automationMode:Lcom/pikminx/helper/PetalAccessibilityService$AutomationMode;
+    invoke-virtual {v0}, Ljava/lang/Enum;->name()Ljava/lang/String;
+    move-result-object v0
+    const-string v1, "ERROR"
+    invoke-static {p0, v0, v1, p1}, Lcom/pikminx/helper/RogHandoverControls;->recordResult(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
 
     .line 6883
     iget-object v0, p0, Lcom/pikminx/helper/PetalAccessibilityService;->automationMode:Lcom/pikminx/helper/PetalAccessibilityService$AutomationMode;
@@ -40090,5 +40126,27 @@
 
     .line 360
     :cond_1
+    return-void
+.end method
+
+.method public handoverStartPlanting()V
+    .locals 1
+    const/4 v0, 0x0
+    invoke-direct {p0, v0}, Lcom/pikminx/helper/PetalAccessibilityService;->closeSettingsOverlay(Z)V
+    invoke-direct {p0}, Lcom/pikminx/helper/PetalAccessibilityService;->startAutomation()V
+    return-void
+.end method
+
+.method public handoverStartShortFeed()V
+    .locals 5
+    const/4 v0, 0x0
+    invoke-direct {p0, v0}, Lcom/pikminx/helper/PetalAccessibilityService;->closeSettingsOverlay(Z)V
+    new-instance v0, Lcom/pikminx/helper/FeedSettingsInput;
+    const/4 v1, 0x1
+    const/4 v2, 0x0
+    const/4 v3, 0x1
+    const/16 v4, 0x258
+    invoke-direct {v0, v1, v2, v3, v4}, Lcom/pikminx/helper/FeedSettingsInput;-><init>(IIII)V
+    invoke-direct {p0, v0}, Lcom/pikminx/helper/PetalAccessibilityService;->startFeedAutomation(Lcom/pikminx/helper/FeedSettingsInput;)V
     return-void
 .end method

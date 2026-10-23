@@ -1,0 +1,20 @@
+# 本機工具、帳號、裝置資料與建置附件
+.venv/
+venv/
+__pycache__/
+*.pyc
+.DS_Store
+.env
+.env.*
+!.env.example
+*.keystore
+*.jks
+*.p12
+*.pfx
+*.apk
+*.aab
+*.zip
+*.class
+*.log
+.local/
+local.properties

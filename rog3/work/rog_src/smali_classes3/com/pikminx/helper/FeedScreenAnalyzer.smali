@@ -2944,6 +2944,10 @@
         }
     .end annotation
 
+    invoke-static/range {p0 .. p3}, Lcom/pikminx/helper/RogNectarText;->joinForTarget(Ljava/util/List;Ljava/lang/String;II)Ljava/util/List;
+
+    move-result-object p0
+
     .line 698
     .local p0, "tokens":Ljava/util/List;, "Ljava/util/List<Lcom/pikminx/helper/PetalMatcher$Token;>;"
     move/from16 v8, p3
@@ -3249,6 +3253,10 @@
             "Lcom/pikminx/helper/FeedScreenAnalyzer$NectarSelection;"
         }
     .end annotation
+
+    invoke-static/range {p0 .. p3}, Lcom/pikminx/helper/RogNectarText;->joinForTarget(Ljava/util/List;Ljava/lang/String;II)Ljava/util/List;
+
+    move-result-object p0
 
     .line 746
     .local p0, "tokens":Ljava/util/List;, "Ljava/util/List<Lcom/pikminx/helper/PetalMatcher$Token;>;"
@@ -9218,6 +9226,10 @@
             ">;"
         }
     .end annotation
+
+    invoke-static/range {p0 .. p2}, Lcom/pikminx/helper/RogNectarText;->join(Ljava/util/List;II)Ljava/util/List;
+
+    move-result-object p0
 
     .line 608
     .local p0, "tokens":Ljava/util/List;, "Ljava/util/List<Lcom/pikminx/helper/PetalMatcher$Token;>;"

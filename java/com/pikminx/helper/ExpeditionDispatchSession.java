@@ -87,7 +87,7 @@ final class ExpeditionDispatchSession {
         if (postReturnRevealPending) {
             postReturnRevealPending = false;
             stageStartedAt = nowMillis;
-            return BottomSettleDecision.SWIPE_UP;
+            if (!panelExpanded) return BottomSettleDecision.SWIPE_UP;
         }
         if (bottomSettled) {
             return BottomSettleDecision.READY;

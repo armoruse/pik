@@ -1,3 +1,5 @@
+> 2026-10-23 最新接手：先閱讀儲存庫根目錄 `AGENTS.md` 與 `rog3/CURRENT_STATUS.md`。跨裝置操作見 `rog3/CROSS_DEVICE.md`，可貼上的提示詞見 `rog3/HANDOFF_PROMPT.md`。下文保留原始交接；版本與驗證狀態可能已變更。
+
 > 公開版本說明：手機序號與本機使用者路徑已去識別化。文中的 DEVICE_SERIAL 需以 adb devices 的實際結果取代。
 > 實測截圖、原始 shared preferences 備份及 API 回應快照未放入公開儲存庫或公開 Release。
 > 文中 work/settings-before-test.xml 與截圖路徑是原私人移機包中的證據位置；接手時若需要完整個人設定備份，請向使用者取得私人移機包。公開的 work/settings-template.xml 只供少量短測試。

@@ -1,3 +1,5 @@
+> ROG Phone 3 維護分支 `codex/rog3-handover-20261014`：最新進度與跨裝置接手請見 [CURRENT_STATUS](rog3/CURRENT_STATUS.md)、[接手提示詞](rog3/HANDOFF_PROMPT.md)、[同步操作](rog3/CROSS_DEVICE.md)。
+
 # PikminX
 
 ## ROG Phone 3 維護與跨電腦接手
