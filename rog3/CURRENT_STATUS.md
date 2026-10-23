@@ -6,12 +6,14 @@
 - 工作分支：`codex/rog3-handover-20261014`，尚未合併 main。
 - 接手基準提交：`6d4718bc155b6ba5a96a70089215adc2edb3b47a`；最新提交以 `git log -1` 及遠端分支為準。
 
-## 2026-10-23 本次接手：GitHub 尚未同步
+## 2026-10-23 本次接手：GitHub 同步已恢復
 
 - 開始時分支正確、工作區乾淨；既有提交 `11ee3be8c24b968891e4414b1b803c3b1d3b5460` 領先遠端 1 筆，已保留。
-- `sync_progress.py start` 已成功取得 GitHub 最新分支；遠端仍為 `6d4718bc155b6ba5a96a70089215adc2edb3b47a`，沒有其他裝置的新提交或合併衝突。
-- `sync_progress.py finish` 正常推送失敗：本機 Git 缺少 HTTPS 登入憑證（could not read Username）。已連接 GitHub 工具的寫入嘗試也遭 403 Resource not accessible by integration 拒絕，未建立遠端提交。尚未同步，不得當作已上傳。
-- 下一步先修復本機 Git 的 GitHub 登入或 GitHub App 對此儲存庫的寫入權限；不要把權杖貼入對話或提交到儲存庫。修復後重新 start、檢查遠端差異、測試並 finish；禁止強推。
+- 首次 `sync_progress.py start` 取得遠端 `6d4718bc155b6ba5a96a70089215adc2edb3b47a`，沒有其他裝置的新提交或合併衝突。
+- 先前正常推送曾因本機缺少 HTTPS 登入憑證失敗；GitHub 連接工具也曾遭 403 Resource not accessible by integration 拒絕。這是歷史阻礙，現已改用本機 GitHub 官方 CLI 完成登入及同步。
+- 使用者已完成 GitHub 官方瀏覽器授權，確認登入帳號 armoruse 對 armoruse/pik 有寫入權限。官方 CLI 與本機設定置於忽略的 `.local/`，此儲存庫的 Git 憑證助手已設定；沒有把帳密、權杖或個人設定加入 Git。
+- 重新執行 start 並重跑 30 個 Python 測試、50 項 Java 檢查，全部通過。finish 已正常推送既有 `11ee3be` 與修正提交 `145687ba9c8e6860b5d6ced45d84d10b2a48996e`，並確認遠端 SHA 與本地一致；未強推、未重寫既有提交。最後的交接文件提交另以 finish 輸出及遠端分支為準。
+- 本次授權接續只恢復 GitHub 同步及更新交接文件；沒有新增 APK 部署或遊戲實測。下一步接續自動巡菇、探險座標全流程與同簽章更新驗證，不能把同步成功視為功能已可用。
 
 ### 研究結果
 

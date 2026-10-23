@@ -13,6 +13,8 @@ python3 rog3/tools/sync_progress.py start
 
 Windows 可用 `py -3` 替代 `python3`。確認 Git 的 user.name、user.email 與 GitHub 推送權限已設定；請透過正常憑證管理器或 SSH 授權，不要把 token 寫進腳本或遠端網址。
 
+2026-10-23 本機已以 GitHub 官方 CLI 的瀏覽器登入恢復推送，並設定此儲存庫的憑證助手。CLI 與登入設定放在忽略的 `.local/`，不會提交或自動搬到另一台裝置。GitHub 連接工具的 403 不代表本機 Git 一定沒有權限；請分別確認登入帳號、儲存庫寫入權限及 Git 憑證助手。不要把權杖貼進對話。
+
 將 HANDOFF_PROMPT.md 的提示詞貼給新裝置的開發代理。它會讀 AGENTS.md 及 CURRENT_STATUS.md，才能接續最新進度。僅打開舊聊天室或舊 APK，不會自動帶入 GitHub 的新進度。
 
 ## 每次開始與結束
