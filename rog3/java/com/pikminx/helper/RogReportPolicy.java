@@ -29,8 +29,11 @@ public final class RogReportPolicy {
     public static boolean freshMushroom(String kind, Instant observedAt, Instant expiry, Instant now, int ttlMinutes) {
         return ("LARGE_ELEMENTAL".equals(kind) || "GIANT_EVENT".equals(kind))
                 && observedAt != null && !observedAt.isAfter(now)
-                && now.isBefore(observedAt.plus(Duration.ofMinutes(ttlMinutes)))
-                && (expiry == null || now.isBefore(expiry));
+                && now.isBefore(mushroomDeadline(observedAt, expiry, ttlMinutes));
+    }
+    public static Instant mushroomDeadline(Instant observedAt, Instant explicitExpiry, int ttlMinutes) {
+        Instant ttlEnd = observedAt.plus(Duration.ofMinutes(ttlMinutes));
+        return explicitExpiry != null && explicitExpiry.isBefore(ttlEnd) ? explicitExpiry : ttlEnd;
     }
     public static String dualTime(Instant at, String zoneId) {
         ZoneId zone = ZoneId.of(zoneId), taiwan = ZoneId.of("Asia/Taipei");

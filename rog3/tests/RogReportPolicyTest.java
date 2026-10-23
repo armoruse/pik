@@ -15,6 +15,10 @@ public final class RogReportPolicyTest {
         check(RogReportPolicy.fruitDeadline(bloom, bloom.plusSeconds(23*3600)).equals(bloom.plusSeconds(3600)), "23-hour expedition deadline is separate");
         check(RogReportPolicy.freshMushroom("LARGE_ELEMENTAL", bloom, null, bloom.plusSeconds(899), 15), "fresh elemental report");
         check(!RogReportPolicy.freshMushroom("GIANT_EVENT", bloom, null, bloom.plusSeconds(900), 15), "stale report excluded");
+        check(RogReportPolicy.mushroomDeadline(bloom, bloom.plusSeconds(30), 15).equals(bloom.plusSeconds(30)), "copy deadline respects earlier explicit expiry");
+        check(!RogReportPolicy.freshMushroom("LARGE_ELEMENTAL", bloom, bloom.plusSeconds(30), bloom.plusSeconds(30), 15), "early expiry boundary excluded");
+        check(RogReportPolicy.mushroomDeadline(bloom, bloom.plusSeconds(1800), 15).equals(bloom.plusSeconds(900)), "explicit expiry never extends freshness");
+        check(RogReportPolicy.mushroomDeadline(bloom, null, 15).equals(bloom.plusSeconds(900)), "missing expiry uses freshness limit");
         check(!RogReportPolicy.freshMushroom("10", bloom, null, bloom, 15), "unmapped numeric type never guessed");
         check(RogReportPolicy.timestamp("2026-10-14T14:00:00+08:00").equals(bloom), "offset timestamp parsed as instant");
         check(RogReportPolicy.dualTime(Instant.parse("2026-11-02T00:00:00Z"), "America/Chicago").contains("慢 14 小時"), "Nashville end uses standard time");
@@ -24,6 +28,6 @@ public final class RogReportPolicyTest {
         check(RogReportPolicy.nextClaim(bloom, "Asia/Tokyo", "YEARLY").equals(Instant.parse("2026-12-31T15:00:00Z")), "annual reward resets in local year");
         try { RogReportPolicy.validateCoordinate(Double.NaN, 121); throw new AssertionError("NaN accepted"); } catch (IllegalArgumentException expected) {}
         try { RogReportPolicy.validateCoordinate(25, 181); throw new AssertionError("invalid longitude accepted"); } catch (IllegalArgumentException expected) {}
-        System.out.println("17 report-policy checks passed");
+        System.out.println("21 report-policy checks passed");
     }
 }

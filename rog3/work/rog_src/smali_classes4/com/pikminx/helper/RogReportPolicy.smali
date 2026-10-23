@@ -81,7 +81,7 @@
 .method public static dualTime(Ljava/time/Instant;Ljava/lang/String;)Ljava/lang/String;
     .locals 6
 
-    .line 36
+    .line 39
     invoke-static {p1}, Ljava/time/ZoneId;->of(Ljava/lang/String;)Ljava/time/ZoneId;
 
     move-result-object p1
@@ -92,14 +92,14 @@
 
     move-result-object v0
 
-    .line 37
+    .line 40
     const-string v1, "yyyy/MM/dd HH:mm"
 
     invoke-static {v1}, Ljava/time/format/DateTimeFormatter;->ofPattern(Ljava/lang/String;)Ljava/time/format/DateTimeFormatter;
 
     move-result-object v1
 
-    .line 38
+    .line 41
     invoke-virtual {p0, p1}, Ljava/time/Instant;->atZone(Ljava/time/ZoneId;)Ljava/time/ZonedDateTime;
 
     move-result-object p1
@@ -108,7 +108,7 @@
 
     move-result-object p0
 
-    .line 39
+    .line 42
     invoke-virtual {p1}, Ljava/time/ZonedDateTime;->getOffset()Ljava/time/ZoneOffset;
 
     move-result-object v0
@@ -127,7 +127,7 @@
 
     sub-int/2addr v0, v2
 
-    .line 40
+    .line 43
     if-nez v0, :cond_2e
 
     const-string v0, "\u540c\u6642"
@@ -144,7 +144,7 @@
     :cond_33
     const-string v2, "\u6162 "
 
-    .line 41
+    .line 44
     :goto_35
     invoke-static {v0}, Ljava/lang/Math;->abs(I)I
 
@@ -152,7 +152,7 @@
 
     div-int/lit16 v3, v3, 0xe10
 
-    .line 42
+    .line 45
     invoke-static {v0}, Ljava/lang/Math;->abs(I)I
 
     move-result v4
@@ -225,7 +225,7 @@
 
     move-result-object v0
 
-    .line 43
+    .line 46
     :goto_82
     invoke-virtual {v1, p1}, Ljava/time/format/DateTimeFormatter;->format(Ljava/time/temporal/TemporalAccessor;)Ljava/lang/String;
 
@@ -283,7 +283,7 @@
 .end method
 
 .method public static freshMushroom(Ljava/lang/String;Ljava/time/Instant;Ljava/time/Instant;Ljava/time/Instant;I)Z
-    .locals 2
+    .locals 1
 
     .line 30
     const-string v0, "LARGE_ELEMENTAL"
@@ -300,26 +300,20 @@
 
     move-result p0
 
-    if-eqz p0, :cond_31
+    if-eqz p0, :cond_24
 
     :cond_10
-    if-eqz p1, :cond_31
+    if-eqz p1, :cond_24
 
     .line 31
     invoke-virtual {p1, p3}, Ljava/time/Instant;->isAfter(Ljava/time/Instant;)Z
 
     move-result p0
 
-    if-nez p0, :cond_31
-
-    int-to-long v0, p4
+    if-nez p0, :cond_24
 
     .line 32
-    invoke-static {v0, v1}, Ljava/time/Duration;->ofMinutes(J)Ljava/time/Duration;
-
-    move-result-object p0
-
-    invoke-virtual {p1, p0}, Ljava/time/Instant;->plus(Ljava/time/temporal/TemporalAmount;)Ljava/time/Instant;
+    invoke-static {p1, p2, p4}, Lcom/pikminx/helper/RogReportPolicy;->mushroomDeadline(Ljava/time/Instant;Ljava/time/Instant;I)Ljava/time/Instant;
 
     move-result-object p0
 
@@ -327,27 +321,17 @@
 
     move-result p0
 
-    if-eqz p0, :cond_31
+    if-eqz p0, :cond_24
 
-    if-eqz p2, :cond_2f
-
-    .line 33
-    invoke-virtual {p3, p2}, Ljava/time/Instant;->isBefore(Ljava/time/Instant;)Z
-
-    move-result p0
-
-    if-eqz p0, :cond_31
-
-    :cond_2f
     const/4 p0, 0x1
 
-    goto :goto_32
+    goto :goto_25
 
-    :cond_31
+    :cond_24
     const/4 p0, 0x0
 
     .line 30
-    :goto_32
+    :goto_25
     return p0
 .end method
 
@@ -383,10 +367,42 @@
     return-object p1
 .end method
 
+.method public static mushroomDeadline(Ljava/time/Instant;Ljava/time/Instant;I)Ljava/time/Instant;
+    .locals 2
+
+    .line 35
+    int-to-long v0, p2
+
+    invoke-static {v0, v1}, Ljava/time/Duration;->ofMinutes(J)Ljava/time/Duration;
+
+    move-result-object p2
+
+    invoke-virtual {p0, p2}, Ljava/time/Instant;->plus(Ljava/time/temporal/TemporalAmount;)Ljava/time/Instant;
+
+    move-result-object p0
+
+    .line 36
+    if-eqz p1, :cond_12
+
+    invoke-virtual {p1, p0}, Ljava/time/Instant;->isBefore(Ljava/time/Instant;)Z
+
+    move-result p2
+
+    if-eqz p2, :cond_12
+
+    goto :goto_13
+
+    :cond_12
+    move-object p1, p0
+
+    :goto_13
+    return-object p1
+.end method
+
 .method public static nextClaim(Ljava/time/Instant;Ljava/lang/String;Ljava/lang/String;)Ljava/time/Instant;
     .locals 2
 
-    .line 46
+    .line 49
     invoke-static {p1}, Ljava/time/ZoneId;->of(Ljava/lang/String;)Ljava/time/ZoneId;
 
     move-result-object p1
@@ -395,7 +411,7 @@
 
     move-result-object p0
 
-    .line 47
+    .line 50
     const-string p1, "DAILY"
 
     invoke-virtual {p1, p2}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
@@ -428,7 +444,7 @@
 
     return-object p0
 
-    .line 48
+    .line 51
     :cond_27
     const-string p1, "YEARLY"
 
@@ -466,7 +482,7 @@
 
     return-object p0
 
-    .line 49
+    .line 52
     :cond_49
     const-string p1, "14_DAYS"
 
@@ -488,7 +504,7 @@
 
     return-object p0
 
-    .line 50
+    .line 53
     :cond_5c
     const-string p1, "30_DAYS"
 
@@ -510,7 +526,7 @@
 
     return-object p0
 
-    .line 51
+    .line 54
     :cond_6f
     new-instance p0, Ljava/lang/IllegalArgumentException;
 

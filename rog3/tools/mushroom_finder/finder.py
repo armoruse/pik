@@ -173,22 +173,24 @@ def main():
     args = p.parse_args()
     if not args.worldwide and args.center is None:
         p.error('附近模式需要 --center；全球模式使用 --worldwide')
-    clock = CoordinateClock()
+    clock = None
     while True:
         try:
             records = json.loads(args.input.read_text()) if args.input else read_device(args.adb, args.serial)
             result = select(records, args.center, int(time.time()*1000), args.radius, worldwide=args.worldwide)
+            if clock is None:
+                clock = CoordinateClock()
             clock.annotate(result)
             if args.serial:
                 result['scan_progress'] = read_progress(args.adb, args.serial)
-        except (ValueError, OSError, ET.ParseError, subprocess.SubprocessError) as e:
+        except (ImportError, ValueError, OSError, ET.ParseError, subprocess.SubprocessError) as e:
             result = {'generated_at_ms':int(time.time()*1000), 'matches':[], 'excluded':{},
                       'note':'資料尚未就緒', 'error':str(e)}
         save(result, args.output)
         print('符合', len(result['matches']), '筆', result.get('error',''), flush=True)
         if not args.watch:
-            break
+            return 1 if result.get('error') else 0
         time.sleep(10)
 
 if __name__ == '__main__':
-    main()
+    raise SystemExit(main())

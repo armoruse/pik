@@ -96,7 +96,7 @@
 
     const/16 v6, 0xc8
 
-    if-gt v5, v6, :cond_206
+    if-gt v5, v6, :cond_204
 
     .line 55
     invoke-static {}, Ljava/time/Instant;->now()Ljava/time/Instant;
@@ -117,7 +117,7 @@
 
     move-result v9
     :try_end_28
-    .catch Ljava/lang/Exception; {:try_start_4 .. :try_end_28} :catch_20e
+    .catch Ljava/lang/Exception; {:try_start_4 .. :try_end_28} :catch_20c
 
     const-string v10, "source"
 
@@ -133,7 +133,7 @@
 
     const-string v2, "expires_at"
 
-    if-ge v7, v9, :cond_d0
+    if-ge v7, v9, :cond_ce
 
     .line 57
     :try_start_38
@@ -176,7 +176,7 @@
 
     move-result v3
 
-    if-nez v3, :cond_c8
+    if-nez v3, :cond_c6
 
     .line 61
     const-string v3, "observed_at"
@@ -251,7 +251,7 @@
     invoke-virtual {v9, v15, v10, v11}, Lorg/json/JSONObject;->put(Ljava/lang/String;J)Lorg/json/JSONObject;
 
     .line 68
-    goto :goto_b8
+    goto :goto_b6
 
     .line 69
     :cond_a0
@@ -263,36 +263,34 @@
 
     invoke-static {v4, v3, v2, v5, v10}, Lcom/pikminx/helper/RogReportPolicy;->freshMushroom(Ljava/lang/String;Ljava/time/Instant;Ljava/time/Instant;Ljava/time/Instant;I)Z
 
-    move-result v2
+    move-result v4
 
     .line 70
-    const-wide/16 v10, 0x384
+    invoke-static {v3, v2, v10}, Lcom/pikminx/helper/RogReportPolicy;->mushroomDeadline(Ljava/time/Instant;Ljava/time/Instant;I)Ljava/time/Instant;
 
-    invoke-virtual {v3, v10, v11}, Ljava/time/Instant;->plusSeconds(J)Ljava/time/Instant;
+    move-result-object v2
 
-    move-result-object v3
+    invoke-virtual {v2}, Ljava/time/Instant;->toEpochMilli()J
 
-    invoke-virtual {v3}, Ljava/time/Instant;->toEpochMilli()J
+    move-result-wide v2
 
-    move-result-wide v3
+    invoke-virtual {v9, v15, v2, v3}, Lorg/json/JSONObject;->put(Ljava/lang/String;J)Lorg/json/JSONObject;
 
-    invoke-virtual {v9, v15, v3, v4}, Lorg/json/JSONObject;->put(Ljava/lang/String;J)Lorg/json/JSONObject;
-
-    move v3, v2
+    move v3, v4
 
     .line 72
-    :goto_b8
-    if-eqz v3, :cond_be
+    :goto_b6
+    if-eqz v3, :cond_bc
 
     invoke-interface {v6, v9}, Ljava/util/List;->add(Ljava/lang/Object;)Z
 
-    goto :goto_c0
+    goto :goto_be
 
-    :cond_be
+    :cond_bc
     add-int/lit8 v8, v8, 0x1
 
     .line 56
-    :goto_c0
+    :goto_be
     add-int/lit8 v7, v7, 0x1
 
     move-object/from16 v3, p0
@@ -302,7 +300,7 @@
     goto/16 :goto_24
 
     .line 60
-    :cond_c8
+    :cond_c6
     new-instance v0, Ljava/lang/IllegalArgumentException;
 
     const-string v2, "\u6bcf\u7b46\u56de\u5831\u9700\u4fdd\u7559\u4f86\u6e90"
@@ -312,7 +310,7 @@
     throw v0
 
     .line 74
-    :cond_d0
+    :cond_ce
     move-object/from16 p0, v3
 
     new-instance v3, Lcom/pikminx/helper/RogResources$$ExternalSyntheticLambda0;
@@ -378,16 +376,16 @@
 
     move-result-object v7
 
-    :goto_113
+    :goto_111
     invoke-interface {v7}, Ljava/util/Iterator;->hasNext()Z
 
     move-result v8
-    :try_end_117
-    .catch Ljava/lang/Exception; {:try_start_38 .. :try_end_117} :catch_20e
+    :try_end_115
+    .catch Ljava/lang/Exception; {:try_start_38 .. :try_end_115} :catch_20c
 
-    if-eqz v8, :cond_1c2
+    if-eqz v8, :cond_1c0
 
-    :try_start_119
+    :try_start_117
     invoke-interface {v7}, Ljava/util/Iterator;->next()Ljava/lang/Object;
 
     move-result-object v8
@@ -510,7 +508,7 @@
 
     move-result v1
 
-    if-eqz v1, :cond_1a0
+    if-eqz v1, :cond_19e
 
     const-string v1, "\u63a2\u96aa\uff0f\u56de\u5831\u5230\u671f\uff1a"
 
@@ -529,7 +527,7 @@
     invoke-virtual {v1, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     .line 84
-    :cond_1a0
+    :cond_19e
     invoke-virtual {v8, v14}, Lorg/json/JSONObject;->getDouble(Ljava/lang/String;)D
 
     move-result-wide v6
@@ -563,10 +561,10 @@
 
     move-object/from16 v7, v16
 
-    goto/16 :goto_113
+    goto/16 :goto_111
 
     .line 86
-    :cond_1c2
+    :cond_1c0
     move-object v9, v6
 
     invoke-virtual {v4}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
@@ -581,13 +579,13 @@
 
     move-result v0
 
-    if-eqz v0, :cond_1d3
+    if-eqz v0, :cond_1d1
 
     const-wide/16 v4, 0x0
 
-    goto :goto_1dd
+    goto :goto_1db
 
-    :cond_1d3
+    :cond_1d1
     invoke-interface {v9, v1}, Ljava/util/List;->get(I)Ljava/lang/Object;
 
     move-result-object v0
@@ -598,7 +596,7 @@
 
     move-result-wide v4
 
-    :goto_1dd
+    :goto_1db
     const/4 v1, 0x0
 
     aput-wide v4, p2, v1
@@ -606,12 +604,12 @@
     invoke-virtual {v3}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
 
     move-result-object v0
-    :try_end_1e4
-    .catch Ljava/lang/Exception; {:try_start_119 .. :try_end_1e4} :catch_202
+    :try_end_1e2
+    .catch Ljava/lang/Exception; {:try_start_117 .. :try_end_1e2} :catch_200
 
     move-object/from16 v1, p3
 
-    :try_start_1e6
+    :try_start_1e4
     invoke-virtual {v1, v0}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
 
     .line 87
@@ -640,17 +638,17 @@
     invoke-interface {v0}, Landroid/content/SharedPreferences$Editor;->apply()V
 
     .line 88
-    goto :goto_22e
+    goto :goto_22c
 
-    :catch_202
+    :catch_200
     move-exception v0
 
     move-object/from16 v1, p3
 
-    goto :goto_20f
+    goto :goto_20d
 
     .line 54
-    :cond_206
+    :cond_204
     new-instance v0, Ljava/lang/IllegalArgumentException;
 
     const-string v2, "\u6bcf\u6b21\u6700\u591a\u532f\u5165 200 \u7b46\u56de\u5831"
@@ -658,14 +656,14 @@
     invoke-direct {v0, v2}, Ljava/lang/IllegalArgumentException;-><init>(Ljava/lang/String;)V
 
     throw v0
-    :try_end_20e
-    .catch Ljava/lang/Exception; {:try_start_1e6 .. :try_end_20e} :catch_20e
+    :try_end_20c
+    .catch Ljava/lang/Exception; {:try_start_1e4 .. :try_end_20c} :catch_20c
 
     .line 88
-    :catch_20e
+    :catch_20c
     move-exception v0
 
-    :goto_20f
+    :goto_20d
     const-string v2, ""
 
     const/4 v3, 0x0
@@ -697,7 +695,7 @@
     invoke-virtual {v1, v0}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
 
     .line 89
-    :goto_22e
+    :goto_22c
     return-void
 .end method
 

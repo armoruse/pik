@@ -67,7 +67,7 @@ public final class RogResources {
                         r.put("_deadline", RogReportPolicy.fruitDeadline(bloom, expiry).toEpochMilli());
                     } else {
                         active = RogReportPolicy.freshMushroom(r.getString("kind"), observed, expiry, now, 15);
-                        r.put("_deadline", observed.plusSeconds(900).toEpochMilli());
+                        r.put("_deadline", RogReportPolicy.mushroomDeadline(observed, expiry, 15).toEpochMilli());
                     }
                     if (active) valid.add(r); else excluded++;
                 }
