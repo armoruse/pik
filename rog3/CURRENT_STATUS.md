@@ -6,6 +6,38 @@
 - 工作分支：`codex/rog3-handover-20261014`，尚未合併 main。
 - 接手基準提交：`6d4718bc155b6ba5a96a70089215adc2edb3b47a`；最新提交以 `git log -1` 及遠端分支為準。
 
+## 2026-10-24：優先評估改步數安裝，等待手機連線
+
+使用者將當前優先事項改為「先安裝可以改步數的方法」。開始時固定分支正確、工作區乾淨，接續 `3e365d11e972bdc53985ea4b9c88649c558255e8`；`sync_progress.py start` 成功，遠端沒有新提交或衝突。
+
+### 研究結果
+
+- 重新查閱 [Pikmin Bloom 官方 Health Connect 說明](https://scopelyexplore.helpshift.com/hc/en/11-pikmin-bloom/faq/2603-health-connect/)：遊戲使用 Health Connect 必須 Android 14 以上；Health Connect 本身不產生步數。官方仍將舊 Google Fit 的轉換期限標為暫定，不能據此斷言所有舊裝置的服務已經終止。
+- [巡花助手目前公開說明](https://github.com/SmailDot/Pikmin-Bloom-GPS)也要求 Android 14 以上使用步數功能。本機 StepInjector 原始碼的作用是寫入 Health Connect 的 StepsRecord／DistanceRecord，不能據此推論 Android 12 的遊戲就能採計。
+- [官方舊 Google Fit 排錯說明](https://niantic.helpshift.com/hc/en/23-pikmin-bloom/faq/5321-my-steps-aren-t-being-counted-correctly-android-track-with-google-fit/)指出手動填入 Google Fit 的步數不會加入遊戲總步數。沒有把這條規則擴大成所有第三方來源必定無效，也沒有把舊版教學當成現版本已驗證方案。
+- 原 ROG3 上次實測為 Android 12，交接已有巡花助手 1.6.0／versionCode 8、Google Fit 及 Health Connect 的安裝紀錄。目前尚無在這支手機上驗證成功、且符合不 root／不刷機限制的軟體改步數方案；安裝健康資料 App 本身不等於解除遊戲的系統版本限制。
+
+### 已實作與檢查
+
+本次只更新研究及交接紀錄，沒有修改應用程式，也沒有為文件變更新增或重跑無關的程式測試。已重新核對來源、原始碼及裝置連線；提交前審查文件差異、空白錯誤及敏感資料。
+
+### 已部署
+
+尚未安裝新的步數工具，未寫入或刪除健康紀錄，未變更手機系統、遊戲或既有 App。手機版本仍只有先前的確認紀錄，不能宣稱已重新連線驗證。
+
+### 實機與模擬器驗證
+
+- 最新 ADB 裝置清單為空；電腦 USB 清單亦未找到 ASUS／Android 裝置，僅解鎖手機不足以確認 USB 偵錯已連線。已請使用者確認是原 ROG3 還是另一支 Android 14 以上手機，並接資料線、允許 USB 偵錯；尚待回覆。
+- 接續上一段座標測試：使用者已同意只交給本機 gpsGo 接收器。私人截圖可見 gpsGo「擷取到座標」通知與座標提示，足以確認這一次正常遊戲分享已到達本機接收器；未在公開紀錄放入原始位置。沒有因此確認菇種／人數／觀察時間的完整對應，也沒有新的有效候選或完成巡掃。
+- 改步數需求提出後已暫停座標測試；目前無連線裝置，未再操作遊戲。自動巡菇、探險座標全流程仍未完成。未領明信片、未參戰或消耗蘑菇券、未購買、未 root 或刷機。
+
+### 下一步
+
+1. 先確認安裝目標及 USB 偵錯連線，實讀系統版本與遊戲步數來源。
+2. 若目標為 Android 14 以上，核對既有巡花助手版本與簽章，再設定 Health Connect 步數權限、資料來源優先順序及遊戲讀取來源；以少量步數分別核對寫入、健康資料總計與遊戲實際增量，未驗證前不能說可用。
+3. 若仍為原 Android 12 ROG3，先核對實際遊戲是否尚提供舊 Google Fit 來源及相容性證據；沒有可驗證路徑時應明說尚未完成安裝，不任意安裝 DeFit、不升級或刷系統。
+4. 步數處理後接續自動巡菇、真實座標對應及同簽章修正版部署。原簽章仍未取得，既有部署限制持續適用。
+
 ## 2026-10-24：續掃工作資訊與手機座標橋接
 
 開始時固定分支正確、工作區乾淨；`sync_progress.py start` 成功，接續 `ada2ce416fde6a72eb906e44649bf2473ca85bd4`，沒有其他裝置的新提交或衝突。以下是本次新增進度，10/23 區段保留為歷史紀錄。
