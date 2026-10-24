@@ -42,7 +42,9 @@ python3 -m venv .venv
 # Windows 對應執行檔為 .venv\Scripts\python.exe，JDK 路徑需改成本機路徑
 ```
 
-30 個 Python 測試與 4 組純 Java 檢查不需要手機。Android APK 建置仍需 SDK build-tools 35.0.0、platform android-35、Java 17。看 `python3 rog3/work/build_handover.py --help`。
+42 個 Python 測試與 4 組純 Java 檢查不需要手機。Android APK 建置仍需 SDK build-tools 35.0.0、platform android-35、Java 17。看 `python3 rog3/work/build_handover.py --help`。
+
+另有隔離模擬器的手機回報 JSON／Android ART 契約檢查：`python3 rog3/tools/check_phone_reports_android.py --help`。它使用合成資料，不安裝 APK、不操作遊戲，也不能取代實體手機的 UI 匯入與探險驗證。
 
 ## 手機目前版本的最小修正重建
 

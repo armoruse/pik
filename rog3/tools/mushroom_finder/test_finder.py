@@ -6,7 +6,7 @@ import tempfile
 from pathlib import Path
 
 NOW=1_000_000
-BASE={'placeId':'a','name':'大型火蘑菇','size':'LARGE','type':'FIRE',
+BASE={'id':'synthetic-observation-a','source':'GEO_INTENT','placeId':'a','name':'大型火蘑菇','size':'LARGE','type':'FIRE',
       'players':4,'lat':25.,'lng':121.,'time':NOW-1000,
       'lastConfirmedAt':NOW-1000,'status':'CONFIRMED'}
 

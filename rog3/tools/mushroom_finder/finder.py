@@ -7,6 +7,7 @@ import math
 from local_time import CoordinateClock
 from report import render
 from progress import read_progress
+from phone_reports import build_reports
 from pathlib import Path
 import subprocess
 import time
@@ -23,7 +24,10 @@ def normal(text):
 
 
 def number(value):
-    return type(value) in (int, float) and math.isfinite(value)
+    try:
+        return type(value) in (int, float) and math.isfinite(value)
+    except OverflowError:
+        return False
 
 
 def coordinate(lat, lng):
@@ -76,6 +80,10 @@ def select(records, center, now_ms, radius_m=1000, max_age_ms=300000, worldwide=
             kind = '巨大活動菇'
         if not coordinate(lat, lng):
             reason = '缺少座標'
+        elif r.get('source') != 'GEO_INTENT':
+            reason = '座標來源未確認'
+        elif not isinstance(r.get('id'), str) or not r['id'].strip():
+            reason = '缺少觀察識別碼'
         elif r.get('status') != 'CONFIRMED':
             reason = '尚未確認或已消失'
         elif not number(confirmed) or confirmed > now_ms or observed > now_ms:
@@ -94,6 +102,8 @@ def select(records, center, now_ms, radius_m=1000, max_age_ms=300000, worldwide=
             excluded[reason] += 1
             continue
         accepted.append({'name': str(r.get('name', '')), 'kind': kind, 'players': players,
+                         'observation_id': r['id'], 'place_id': r.get('placeId'),
+                         'session_id': r.get('sessionId'), 'capture_source': r['source'],
                          'lat': lat, 'lng': lng, 'distance_m': round(distance(center, (lat, lng))) if center is not None else None,
                          'observed_at_ms': min(confirmed, observed),
                          'valid_until_ms': min(confirmed, observed) + max_age_ms})
@@ -130,6 +140,11 @@ def read_device(adb, serial):
 
 def save(result, out):
     out.mkdir(parents=True, exist_ok=True)
+    result['field_reports'] = build_reports(result, int(time.time() * 1000))
+    phone_path = out / '手機座標回報.json'
+    phone_tmp = phone_path.with_suffix('.tmp')
+    phone_tmp.write_text(json.dumps(result['field_reports'], ensure_ascii=False, indent=2), encoding='utf-8')
+    phone_tmp.replace(phone_path)
     html_path = out / '尋菇候選與當地時間.html'
     html_tmp = html_path.with_suffix('.tmp')
     html_tmp.write_text(render(result), encoding='utf-8')
@@ -146,6 +161,16 @@ def save(result, out):
         lines += ['尚無掃描紀錄，請先在 gpsGo 完成區域掃描。']
     elif not result['matches']:
         lines += ['目前沒有符合條件的近期紀錄，不能據此斷定附近沒有蘑菇。']
+    progress = result.get('scan_progress', {})
+    if progress.get('available'):
+        lines += ['', f"已儲存掃描：完成 {progress['completed_cells']} / {progress['total_cells']} 格；"
+                  f"失敗 {progress['failed_cells']} 格。", progress['note'],
+                  '續掃未完成格（索引由 0 起）：' + str(progress['remaining_cell_indices']),
+                  '重試失敗／中斷格：' + str(progress['retry_cell_indices']),
+                  '續掃條件：' + progress['resume_note']]
+    lines += ['', f"手機座標回報.json：{len(result['field_reports'])} 筆，最多 200 筆；"
+              '供支援此格式的 ROG 回報介面匯入；請先核對手機版本與匯入入口。'
+              '保留觀察時間與 5 分鐘到期時間，不會因匯入而延長時效。']
     for r in result['matches']:
         observed = datetime.fromtimestamp(r['observed_at_ms']/1000, timezone.utc).isoformat()
         name = r['name'].replace('\n',' ').replace('\r',' ').replace('`','')
@@ -154,6 +179,7 @@ def save(result, out):
                   f"  座標：`{r['lat']:.6f},{r['lng']:.6f}`；觀察時間：{observed}",
                   f"  當地：{r.get('local_now', '尚未確認')}（{r.get('timezone', '未知')}）",
                   f"  台灣：{r.get('taiwan_now', '尚未確認')}；{r.get('date_label', '')}",
+                  f"  座標來源：{r.get('capture_source', '未知')}；觀察 ID：{r.get('observation_id', '未知')}",
                   '  用券狀態：未確認，請看遊戲參戰畫面。']
     lines += ['', '排除原因：' + json.dumps(result['excluded'], ensure_ascii=False)]
     (out / '未滿5人蘑菇.md').write_text('\n'.join(lines)+'\n', encoding='utf-8')

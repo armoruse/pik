@@ -1,7 +1,57 @@
 """Read only gpsGo scan checkpoints, never infer a live service from saved state."""
 import json
+import math
 import subprocess
 import xml.etree.ElementTree as ET
+
+
+def numeric(value):
+    try:
+        return type(value) in (int, float) and math.isfinite(value)
+    except OverflowError:
+        return False
+
+
+def resume_info(row, completed, failed, total):
+    """Saved cell indices are work items, never estimated mushroom coordinates."""
+    remaining = sorted(set(range(total)) - completed)
+    active = row.get('active')
+    retry = sorted((failed | ({active} if active is not None else set())) - completed)
+    status = row.get('status')
+    if status == 'DISCARDED':
+        remaining, retry = [], []
+    lat, lng, radius = (row.get(k) for k in ('lat', 'lng', 'radiusKm'))
+    valid_center = numeric(lat) and numeric(lng) and abs(lat) <= 90 and abs(lng) <= 180
+    valid_radius = numeric(radius) and 0 < radius <= 50
+    identity = row.get('id')
+    compatible = (type(row.get('detector')) is int and row['detector'] == 2
+                  and type(row.get('calibration')) is int and row['calibration'] == 1)
+    frame = [row.get('width'), row.get('height')]
+    valid_frame = all(type(n) is int and 0 < n <= 16384 for n in frame)
+    if status == 'DISCARDED':
+        note = '此輪已丟棄，不可續掃。'
+    elif not remaining:
+        note = '儲存格已全部完成；取得新鮮候選仍需重新掃描。'
+    elif status not in ('PAUSED', 'INTERRUPTED'):
+        note = '先在 gpsGo 確認掃描已停止；儲存狀態不能證明服務仍在執行。'
+    elif not isinstance(identity, str) or not identity.strip():
+        note = '缺少掃描識別碼，請在 gpsGo 重新確認或建立新掃描。'
+    elif not compatible:
+        note = '偵測器／校準版本不相容或缺值，請在 gpsGo 重新校準。'
+    elif not valid_center or not valid_radius or not valid_frame:
+        note = '缺少有效中心、半徑或畫面尺寸，不能自動接續。'
+    else:
+        note = '可在 gpsGo「已保存的掃描」續掃；仍需確認服務已停止，恢復原中心、縮放、方向與畫面尺寸，再重新校準。'
+    ready = (bool(remaining) and status in ('PAUSED', 'INTERRUPTED')
+             and isinstance(identity, str) and bool(identity.strip())
+             and compatible and valid_center and valid_radius and valid_frame)
+    return {'session_id': identity if isinstance(identity, str) else None,
+            'remaining_cell_indices': remaining, 'retry_cell_indices': retry,
+            'resume_available': ready, 'resume_note': note,
+            'saved_center': [lat, lng] if valid_center else None,
+            'saved_radius_km': radius if valid_radius else None,
+            'saved_frame': frame if valid_frame else None,
+            'calibration_compatible': compatible}
 
 
 def parse_progress(xml):
@@ -26,9 +76,13 @@ def parse_progress(xml):
                 groups.append(set(values))
             if groups[0] & groups[1]:
                 continue
+            active = row.get('active')
+            if active is not None and (type(active) is not int or not 0 <= active < total):
+                continue
             sessions.append({'created_at_ms': row['created'], 'total_cells': total,
                              'completed_cells': len(groups[0]), 'failed_cells': len(groups[1]),
-                             'saved_status': str(row.get('status', 'UNKNOWN'))})
+                             'saved_status': str(row.get('status', 'UNKNOWN')),
+                             **resume_info(row, *groups, total)})
         except (ValueError, TypeError):
             continue
     if not sessions:
