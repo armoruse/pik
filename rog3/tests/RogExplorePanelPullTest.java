@@ -27,6 +27,14 @@ public class RogExplorePanelPullTest {
                 "partial sheet still needs reveal");
         check(partial.confirm("",30000)==ExpeditionDispatchSession.Confirmation.STAGE_TIMEOUT,
                 "keep bounded timeout when no next item is verified");
-        System.out.println("Explore panel: 9 checks passed");
+        var recovery = returned();
+        check(recovery.confirm("NAV_TAB:EXPLORE", 100) == ExpeditionDispatchSession.Confirmation.WAIT,
+                "recovery tab requires two matching frames");
+        check(recovery.confirm("NAV_TAB:EXPLORE", 120) == ExpeditionDispatchSession.Confirmation.READY,
+                "recovery tab ready on second frame");
+        recovery.recordProgress(150);
+        check(recovery.confirm("", 24000) != ExpeditionDispatchSession.Confirmation.STAGE_TIMEOUT,
+                "recordProgress resets stage timeout so recovery does not abort");
+        System.out.println("Explore panel: 12 checks passed");
     }
 }

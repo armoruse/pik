@@ -1,10 +1,42 @@
 # 最新開發進度
 
-更新日期：2026-10-24（Asia/Taipei）。請先讀儲存庫根目錄 AGENTS.md。這份現況優先於 2026-10-14 的舊交接說明。
+更新日期：2026-10-27（Asia/Taipei）。請先讀儲存庫根目錄 AGENTS.md。這份現況優先於 2026-10-14 的舊交接說明。
 
 - 儲存庫：<https://github.com/armoruse/pik>
 - 工作分支：`codex/rog3-handover-20261014`，尚未合併 main。
-- 接手基準提交：`6d4718bc155b6ba5a96a70089215adc2edb3b47a`；最新提交以 `git log -1` 及遠端分支為準。
+- 接手基準提交：`cc54a57497dff75b8e49c7fe0237caee6df4c78a`；最新提交以 `git log -1` 及遠端分支為準。
+
+## 2026-10-27：實作探險自愈分頁回跳與手勢安全錨點
+
+開始時固定分支正確、工作區保留 2026-10-25 模擬器先測規範，遠端與本地提交一致；接續 `cc54a57497dff75b8e49c7fe0237caee6df4c78a`。
+
+### 研究結果
+
+- 排查先前實機普通探險停在第 5／19 筆中斷點（浮窗顯示「探險流程停留目前步驟過久，為避免誤點已停止」）之根因：
+  1. 上拉手勢起點若接近頂部分頁標籤邊緣，容易在手指觸碰時誤觸「皮克敏」分頁切換。
+  2. 一旦誤入皮克敏分頁，`Screen` 辨識非 `EXPLORE_LIST`，原本流程僅重複等待畫面直至 24 秒逾時退出，缺乏自我恢復機制（Self-healing Recovery）。
+
+### 已實作與檢查
+
+- `java/com/pikminx/helper/PetalAccessibilityService.java`：
+  1. 清單搜尋階段（`handleDispatchList`）若因任何原因偏離探險清單，畫面上方偵測到「探險」分頁標籤（`findExploreTabAnchor`）時，經兩幀確認主動派發點擊切回探險分頁，並以 `recordProgress` 重置步驟逾時，避免流程中斷。
+  2. 上拉面板手勢起點接入 `RogExplorePanelPull.start`，固定螢幕中央水平位置並自抬頭中央拉起，防止誤觸分頁按鈕。
+- `rog3/tests/RogExplorePanelPullTest.java`：新增探險分頁雙幀確認與 `recordProgress` 防逾時檢查，共 12 項純 Java 檢查通過。
+- `AGENTS.md` 與 `rog3/CROSS_DEVICE.md`：記錄 2026-10-25 使用者指示之「先模擬器安裝、開發與測試，通過後才部署到實體測試機」原則。
+- 本地回歸測試全數通過（42 個 Python 測試、53 項純 Java 檢查通過；`git diff --check` 通過）。
+
+### 已部署
+
+本次未部署。實體 ROG Phone 3 仍為 `rog1.0.2`／versionCode 310。原簽章需求持續有效，未替換手機簽章或解除安裝。
+
+### 實機與模擬器驗證
+
+本次未操作實體手機或模擬器遊戲流程。未領取明信片、未消耗蘑菇券、未購買、未 root 或刷機。自動巡菇仍未完成，不得當作已可用功能。
+
+### 下一步
+
+1. 依「先模擬器後實機」原則，在隔離模擬器（`ROG3_Play_API31` / `emulator-5582`）驗證探險連續派遣流程，確認是否順利跨過第 5 筆中斷點並驗證分頁回跳機制。
+2. 模擬器驗證通過後，再對手機版本套用最小修正（`patch_phone_fixes.py`）進行同簽章部署。
 
 ## 2026-10-24：ROG3 重新連線，確認既有 DeFit，步數尚待驗證
 
