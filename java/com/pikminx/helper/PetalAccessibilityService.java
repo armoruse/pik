@@ -1048,29 +1048,12 @@ public final class PetalAccessibilityService extends AccessibilityService {
             return;
         }
         if (screen != ExpeditionScreenAnalyzer.Screen.EXPLORE_LIST) {
+            if (tryRecoverDispatchExploreTab(tokens, bitmap, now)) return;
             if (screen == ExpeditionScreenAnalyzer.Screen.UNKNOWN
                     && ExpeditionScreenAnalyzer.hasExploreNavigationAnchor(
                             tokens, bitmap.getWidth(), bitmap.getHeight())) {
                 scanFocusedDispatchList(
                         bitmap, ExpeditionScreenAnalyzer.isExploreListStart(tokens));
-                return;
-            }
-            ExpeditionScreenAnalyzer.Point exploreTab =
-                    ExpeditionScreenAnalyzer.findExploreTabAnchor(
-                            tokens, bitmap.getWidth(), bitmap.getHeight());
-            if (exploreTab != null) {
-                ExpeditionDispatchSession.Confirmation tabConfirm =
-                        expeditionDispatchSession.confirm("NAV_TAB:EXPLORE", now);
-                if (handleDispatchConfirmation(tabConfirm)) {
-                    dispatchActionTap(
-                            exploreTab,
-                            getString(R.string.status_reward_wrong_page),
-                            () -> {
-                                expeditionDispatchSession.recordProgress(android.os.SystemClock.elapsedRealtime());
-                            });
-                    return;
-                }
-                waitForDispatchFrame(getString(R.string.status_reward_wrong_page));
                 return;
             }
             handleDispatchConfirmation(expeditionDispatchSession.confirm("", now));
@@ -1106,6 +1089,29 @@ public final class PetalAccessibilityService extends AccessibilityService {
         }
         handleDispatchListTarget(
                 target, bitmap.getWidth(), bitmap.getHeight(), now);
+    }
+
+    private boolean tryRecoverDispatchExploreTab(
+            List<PetalMatcher.Token> tokens, Bitmap bitmap, long now) {
+        ExpeditionScreenAnalyzer.Point tab = RogExplorePanelPull.recoveryTab(
+                tokens, bitmap.getWidth(), bitmap.getHeight());
+        if (tab == null) {
+            ExpeditionDispatchSession.Confirmation empty = expeditionDispatchSession.confirm("", now);
+            if (empty == ExpeditionDispatchSession.Confirmation.STAGE_TIMEOUT) {
+                handleDispatchConfirmation(empty);
+                return true;
+            }
+            return false;
+        }
+        ExpeditionDispatchSession.Confirmation confirmation =
+                expeditionDispatchSession.confirmExploreTab(RogExplorePanelPull.recoveryKey(tab), now);
+        if (handleDispatchConfirmation(confirmation)) {
+            dispatchActionTap(screenPointFromBitmap(tab, bitmap),
+                    getString(R.string.status_reward_wrong_page), new RogExplorePanelPull.RecoveryTap());
+        } else {
+            waitForDispatchFrame(getString(R.string.status_reward_wrong_page));
+        }
+        return true;
     }
 
     /** 全畫面漏讀小字時，放大清單區域再辨識一次，避免直接滑過可見目標。 */

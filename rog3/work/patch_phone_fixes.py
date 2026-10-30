@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Apply only wrapped-label and sheet-reveal fixes to a decoded phone APK."""
+"""Apply wrapped-label, sheet-reveal and bounded dispatch recovery fixes to a decoded APK."""
 import argparse
 from pathlib import Path
 import shutil
+from explore_recovery_patch import patch_service, patch_session
 
 
 def replace_once(text, old, new):
@@ -36,7 +37,7 @@ def main():
     end = text.index('.end method', start)
     body = replace_once(text[start:end], '    .line 90\n',
                         '    if-nez p1, :cond_0\n\n    .line 90\n')
-    files[path] = text[:start] + body + text[end:]
+    files[path] = patch_session(text[:start] + body + text[end:])
     path = base / 'PetalAccessibilityService.smali'
     text = path.read_text()
     start = text.index('.method private revealDispatchExplorePanel(')
@@ -48,11 +49,12 @@ def main():
     invoke-static {p1, v2, v3}, Lcom/pikminx/helper/RogExplorePanelPull;->start(Lcom/pikminx/helper/ExpeditionScreenAnalyzer$Point;II)Lcom/pikminx/helper/ExpeditionScreenAnalyzer$Point;
     move-result-object v1
 ''')
-    files[path] = text[:start] + body + text[end:]
+    files[path] = patch_service(text[:start] + body + text[end:])
     existing = [int(p.name.removeprefix('smali_classes'))
                 for p in args.source.glob('smali_classes*') if p.is_dir()]
     target = args.source / ('smali_classes' + str(max(existing) + 1)) / 'com/pikminx/helper'
-    helper_files = [args.helpers / (name + '.smali') for name in ('RogNectarText', 'RogExplorePanelPull')]
+    helper_files = [args.helpers / (name + '.smali') for name in
+                    ('RogNectarText', 'RogExplorePanelPull', 'RogExplorePanelPull$RecoveryTap')]
     if not all(p.is_file() for p in helper_files):
         raise ValueError('請先使用 build_handover.py 編譯修正類別')
     if any(args.source.glob('smali*/com/pikminx/helper/RogNectarText.smali')):
@@ -67,7 +69,7 @@ def main():
     target.mkdir(parents=True)
     for helper in helper_files:
         shutil.copy2(helper, target / helper.name)
-    print('已套用三個既有類別修正及兩個新增類別；保留手機 APK 其他功能')
+    print('已套用三個既有類別修正及探險回復輔助類別；保留手機 APK 其他功能')
 
 
 if __name__ == '__main__':

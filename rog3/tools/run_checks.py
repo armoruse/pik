@@ -23,6 +23,8 @@ def main():
         parser.error('需要 Java 17 JDK；請設定 JAVA_HOME 或 --java-home')
     subprocess.run([sys.executable, '-m', 'unittest', 'discover', '-s',
                     str(ROOT / 'rog3/tools/mushroom_finder'), '-p', 'test_*.py'], check=True, cwd=ROOT)
+    subprocess.run([sys.executable, '-m', 'unittest', 'discover', '-s',
+                    str(ROOT / 'rog3/tools'), '-p', 'test_explore_recovery_patch.py'], check=True, cwd=ROOT)
     with tempfile.TemporaryDirectory(prefix='pikminx-checks-') as scratch:
         tmp = Path(scratch)
         stubs = tmp / 'stubs/com/pikminx/helper'

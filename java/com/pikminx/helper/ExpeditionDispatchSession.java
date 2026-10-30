@@ -59,6 +59,9 @@ final class ExpeditionDispatchSession {
     private boolean postReturnRevealPending;
     private int detailTapAttempts;
     private long detailTapAt;
+    private int exploreRecoveryItem;
+    private int exploreRecoveryTaps;
+    private long exploreRecoveryAt;
 
     ExpeditionDispatchSession(int targetCount, long nowMillis) {
         this.targetCount = Math.max(1, Math.min(99, targetCount));
@@ -169,6 +172,30 @@ final class ExpeditionDispatchSession {
 
     Confirmation confirm(String key, long nowMillis) {
         return confirm(key, nowMillis, 2);
+    }
+
+    /** Two matching navigation frames, two bounded retries, and no timeout extension on input. */
+    Confirmation confirmExploreTab(String key, long nowMillis) {
+        if (nowMillis - stageStartedAt >= STAGE_TIMEOUT_MILLIS) return Confirmation.STAGE_TIMEOUT;
+        if (stage != Stage.LIST_SEARCH || transitionPending) return Confirmation.WAIT;
+        if (exploreRecoveryItem != completedCount) {
+            exploreRecoveryItem = completedCount;
+            exploreRecoveryTaps = 0;
+            exploreRecoveryAt = 0;
+        }
+        if (exploreRecoveryTaps > 0 && nowMillis - exploreRecoveryAt < 3_000L) {
+            confirm("", nowMillis);
+            return Confirmation.WAIT;
+        }
+        if (exploreRecoveryTaps >= 2) return Confirmation.STAGE_TIMEOUT;
+        Confirmation result = confirm(key, nowMillis);
+        if (result == Confirmation.READY) {
+            exploreRecoveryTaps++;
+            exploreRecoveryAt = nowMillis;
+            pendingKey = "";
+            matchingFrames = 0;
+        }
+        return result;
     }
 
     Confirmation confirm(String key, long nowMillis, int requiredFrames) {

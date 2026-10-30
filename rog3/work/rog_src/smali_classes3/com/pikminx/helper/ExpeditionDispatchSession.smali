@@ -69,6 +69,10 @@
 
 
 # direct methods
+.field private exploreRecoveryItem:I
+.field private exploreRecoveryTaps:I
+.field private exploreRecoveryAt:J
+
 .method constructor <init>(IJ)V
     .locals 2
     .param p1, "targetCount"    # I
@@ -1212,4 +1216,61 @@
     iget-boolean v0, p0, Lcom/pikminx/helper/ExpeditionDispatchSession;->transitionPending:Z
 
     return v0
+.end method
+
+.method confirmExploreTab(Ljava/lang/String;J)Lcom/pikminx/helper/ExpeditionDispatchSession$Confirmation;
+    .locals 6
+    iget-wide v0, p0, Lcom/pikminx/helper/ExpeditionDispatchSession;->stageStartedAt:J
+    sub-long v0, p2, v0
+    const-wide/16 v2, 0x5dc0
+    cmp-long v0, v0, v2
+    if-gez v0, :recovery_timeout
+    iget-object v0, p0, Lcom/pikminx/helper/ExpeditionDispatchSession;->stage:Lcom/pikminx/helper/ExpeditionDispatchSession$Stage;
+    sget-object v1, Lcom/pikminx/helper/ExpeditionDispatchSession$Stage;->LIST_SEARCH:Lcom/pikminx/helper/ExpeditionDispatchSession$Stage;
+    if-ne v0, v1, :recovery_wait
+    iget-boolean v0, p0, Lcom/pikminx/helper/ExpeditionDispatchSession;->transitionPending:Z
+    if-nez v0, :recovery_wait
+    iget v0, p0, Lcom/pikminx/helper/ExpeditionDispatchSession;->completedCount:I
+    iget v1, p0, Lcom/pikminx/helper/ExpeditionDispatchSession;->exploreRecoveryItem:I
+    if-eq v0, v1, :recovery_budget
+    iput v0, p0, Lcom/pikminx/helper/ExpeditionDispatchSession;->exploreRecoveryItem:I
+    const/4 v0, 0x0
+    iput v0, p0, Lcom/pikminx/helper/ExpeditionDispatchSession;->exploreRecoveryTaps:I
+    const-wide/16 v0, 0x0
+    iput-wide v0, p0, Lcom/pikminx/helper/ExpeditionDispatchSession;->exploreRecoveryAt:J
+    :recovery_budget
+    iget v0, p0, Lcom/pikminx/helper/ExpeditionDispatchSession;->exploreRecoveryTaps:I
+    if-eqz v0, :recovery_confirm
+    iget-wide v1, p0, Lcom/pikminx/helper/ExpeditionDispatchSession;->exploreRecoveryAt:J
+    sub-long v1, p2, v1
+    const-wide/16 v3, 0xbb8
+    cmp-long v1, v1, v3
+    if-gez v1, :recovery_limit
+    const-string v0, ""
+    invoke-virtual {p0, v0, p2, p3}, Lcom/pikminx/helper/ExpeditionDispatchSession;->confirm(Ljava/lang/String;J)Lcom/pikminx/helper/ExpeditionDispatchSession$Confirmation;
+    goto :recovery_wait
+    :recovery_limit
+    const/4 v1, 0x2
+    if-ge v0, v1, :recovery_timeout
+    :recovery_confirm
+    invoke-virtual {p0, p1, p2, p3}, Lcom/pikminx/helper/ExpeditionDispatchSession;->confirm(Ljava/lang/String;J)Lcom/pikminx/helper/ExpeditionDispatchSession$Confirmation;
+    move-result-object v0
+    sget-object v1, Lcom/pikminx/helper/ExpeditionDispatchSession$Confirmation;->READY:Lcom/pikminx/helper/ExpeditionDispatchSession$Confirmation;
+    if-ne v0, v1, :recovery_return
+    iget v1, p0, Lcom/pikminx/helper/ExpeditionDispatchSession;->exploreRecoveryTaps:I
+    add-int/lit8 v1, v1, 0x1
+    iput v1, p0, Lcom/pikminx/helper/ExpeditionDispatchSession;->exploreRecoveryTaps:I
+    iput-wide p2, p0, Lcom/pikminx/helper/ExpeditionDispatchSession;->exploreRecoveryAt:J
+    const-string v1, ""
+    iput-object v1, p0, Lcom/pikminx/helper/ExpeditionDispatchSession;->pendingKey:Ljava/lang/String;
+    const/4 v1, 0x0
+    iput v1, p0, Lcom/pikminx/helper/ExpeditionDispatchSession;->matchingFrames:I
+    :recovery_return
+    return-object v0
+    :recovery_timeout
+    sget-object v0, Lcom/pikminx/helper/ExpeditionDispatchSession$Confirmation;->STAGE_TIMEOUT:Lcom/pikminx/helper/ExpeditionDispatchSession$Confirmation;
+    return-object v0
+    :recovery_wait
+    sget-object v0, Lcom/pikminx/helper/ExpeditionDispatchSession$Confirmation;->WAIT:Lcom/pikminx/helper/ExpeditionDispatchSession$Confirmation;
+    return-object v0
 .end method
