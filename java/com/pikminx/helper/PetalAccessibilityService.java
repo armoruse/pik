@@ -1048,6 +1048,7 @@ public final class PetalAccessibilityService extends AccessibilityService {
             return;
         }
         if (screen != ExpeditionScreenAnalyzer.Screen.EXPLORE_LIST) {
+            if (tryRecoverDispatchExploreTab(tokens, bitmap, now)) return;
             if (screen == ExpeditionScreenAnalyzer.Screen.UNKNOWN
                     && ExpeditionScreenAnalyzer.hasExploreNavigationAnchor(
                             tokens, bitmap.getWidth(), bitmap.getHeight())) {
@@ -1088,6 +1089,29 @@ public final class PetalAccessibilityService extends AccessibilityService {
         }
         handleDispatchListTarget(
                 target, bitmap.getWidth(), bitmap.getHeight(), now);
+    }
+
+    private boolean tryRecoverDispatchExploreTab(
+            List<PetalMatcher.Token> tokens, Bitmap bitmap, long now) {
+        ExpeditionScreenAnalyzer.Point tab = RogExplorePanelPull.recoveryTab(
+                tokens, bitmap.getWidth(), bitmap.getHeight());
+        if (tab == null) {
+            ExpeditionDispatchSession.Confirmation empty = expeditionDispatchSession.confirm("", now);
+            if (empty == ExpeditionDispatchSession.Confirmation.STAGE_TIMEOUT) {
+                handleDispatchConfirmation(empty);
+                return true;
+            }
+            return false;
+        }
+        ExpeditionDispatchSession.Confirmation confirmation =
+                expeditionDispatchSession.confirmExploreTab(RogExplorePanelPull.recoveryKey(tab), now);
+        if (handleDispatchConfirmation(confirmation)) {
+            dispatchActionTap(screenPointFromBitmap(tab, bitmap),
+                    getString(R.string.status_reward_wrong_page), new RogExplorePanelPull.RecoveryTap());
+        } else {
+            waitForDispatchFrame(getString(R.string.status_reward_wrong_page));
+        }
+        return true;
     }
 
     /** 全畫面漏讀小字時，放大清單區域再辨識一次，避免直接滑過可見目標。 */
@@ -1694,7 +1718,7 @@ public final class PetalAccessibilityService extends AccessibilityService {
                 ? new ExpeditionScreenAnalyzer.Point(
                         Math.round(bitmap.getWidth() * 0.65f),
                         Math.round(bitmap.getHeight() * 0.45f))
-                : anchor;
+                : RogExplorePanelPull.start(anchor, bitmap.getWidth(), bitmap.getHeight());
         ExpeditionScreenAnalyzer.Point screenStart = screenPointFromBitmap(start, bitmap);
         Path path = new Path();
         float endY = Math.max(
